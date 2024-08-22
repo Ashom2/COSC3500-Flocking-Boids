@@ -3,7 +3,7 @@
 /*
 Vector2D class for storing two-dimensional spacial vectors.
 */
-class Vector2D { //TODO move to header
+class Vector2D { // TODO move to header
     public:
         float x;
         float y;
@@ -23,15 +23,49 @@ class Vector2D { //TODO move to header
 Main.
 */
 int main() {
-    //Vector2D arr[20];
-    Vector2D v1 = Vector2D(1.00, 2);
-
+    // Initialise vector array
     Vector2D arr[20];
     for(int i=0; i<20; i++) {
-        arr[i] = Vector2D(-1, 5);
+        arr[i] = Vector2D(i, 20 - i);
     }
 
-    printf("%.2f", arr[0].x);
-    //std::cout << "Flocking/swarming\n" << roundf(v1.x * 100) / 100;
+
+
+    // Write vector array to file
+    // TODO use fstream (it was having problems before)
+    FILE *fptr;
+    // Create a file and open it for writing
+    fptr = fopen("data.txt", "w");
+    if (fptr == NULL) {
+        printf("%s", "Error opening file");
+        return 1;
+    }
+    // Write some text to the file
+    fwrite(arr, sizeof(Vector2D), sizeof(arr) / sizeof(arr[0]), fptr);
+    // Close the file
+    fclose(fptr);
+
+
+
+    // Read vector array from file
+    size_t elementSize = sizeof(Vector2D);
+    const size_t arrLength = 20;
+    Vector2D readArray[arrLength];
+    // Open the file for reading
+    fptr = fopen("data.txt", "r");
+    if (fptr == NULL) {
+        printf("%s", "Error opening file");
+        return 1;
+    }
+    // Read data from the file
+    size_t result = fread(readArray, elementSize, arrLength, fptr);
+    for (int i = 0; i < result; i++) {
+        printf("Vector %d: (%.2f, %.2f)\n", i, readArray[i].x, readArray[i].y);
+    }
+    // Close the file
+    fclose(fptr);
+
+    
+
     return 0;
 }
