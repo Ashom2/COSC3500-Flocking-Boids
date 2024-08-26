@@ -3,7 +3,7 @@
 /*
 Vector2D class for storing two-dimensional spacial vectors.
 */
-class Vector2D { // TODO move to header
+class Vector2D {
     public:
         float x;
         float y;
@@ -23,6 +23,8 @@ class Vector2D { // TODO move to header
 Main.
 */
 int main() {
+    const char *filepath = "data.txt";
+
     // Initialise vector array
     Vector2D arr[20];
     for(int i=0; i<20; i++) {
@@ -35,7 +37,7 @@ int main() {
     // TODO use fstream (it was having problems before)
     FILE *fptr;
     // Create a file and open it for writing
-    fptr = fopen("data.txt", "w");
+    fptr = fopen(filepath, "w");
     if (fptr == NULL) {
         printf("%s", "Error opening file");
         return 1;
