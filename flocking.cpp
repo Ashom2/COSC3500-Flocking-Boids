@@ -20,15 +20,32 @@ class Vector2D {
 };
 
 /*
+Boid class to represent a single bird / particle / actor
+*/
+class Boid {
+    public:
+        Vector2D pos;
+        Vector2D dir;
+};
+
+// Sourced from https://stackoverflow.com/questions/686353/random-float-number-generation
+float randFloat(float min, float max) {
+    return min + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(max-min)));
+}
+
+/*
 Main.
 */
 int main() {
+    int xSize = 128;
+    int ySize = 128;
+
     const char *filepath = "data.txt";
 
     // Initialise vector array
     Vector2D arr[20];
     for(int i=0; i<20; i++) {
-        arr[i] = Vector2D(i, 20 - i);
+        arr[i] = Vector2D(randFloat(0, xSize), randFloat(0, ySize));
     }
 
 
@@ -43,27 +60,10 @@ int main() {
         return 1;
     }
     // Write some text to the file
-    fwrite(arr, sizeof(Vector2D), sizeof(arr) / sizeof(arr[0]), fptr);
-    // Close the file
-    fclose(fptr);
-
-
-
-    // Read vector array from file
-    size_t elementSize = sizeof(Vector2D);
-    const size_t arrLength = 20;
-    Vector2D readArray[arrLength];
-    // Open the file for reading
-    fptr = fopen("data.txt", "r");
-    if (fptr == NULL) {
-        printf("%s", "Error opening file");
-        return 1;
+    for(int i=0; i<20; i++) {
+        fprintf(fptr, "%f %f\n", arr[i].x, arr[i].y);
     }
-    // Read data from the file
-    size_t result = fread(readArray, elementSize, arrLength, fptr);
-    for (int i = 0; i < result; i++) {
-        printf("Vector %d: (%.2f, %.2f)\n", i, readArray[i].x, readArray[i].y);
-    }
+
     // Close the file
     fclose(fptr);
 
