@@ -26,6 +26,16 @@ class Boid {
     public:
         Vector2D pos;
         Vector2D dir;
+
+        Boid() {
+            this->pos = Vector2D();
+            this->dir = Vector2D();
+        }
+    
+        Boid(Vector2D pos, Vector2D dir) {
+            this->pos = pos;
+            this->dir = dir;
+        }
 };
 
 // Sourced from https://stackoverflow.com/questions/686353/random-float-number-generation
@@ -39,13 +49,17 @@ Main.
 int main() {
     int xSize = 128;
     int ySize = 128;
+    const int numParticles = 20;
 
     const char *filepath = "data.txt";
 
     // Initialise vector array
-    Vector2D arr[20];
-    for(int i=0; i<20; i++) {
-        arr[i] = Vector2D(randFloat(0, xSize), randFloat(0, ySize));
+    Boid arr[numParticles];
+    for(int i=0; i<numParticles; i++) {
+        Vector2D pos = Vector2D(randFloat(0, xSize), randFloat(0, ySize));
+        Vector2D dir =Vector2D(randFloat(-1, 1), randFloat(-1, 1));
+        arr[i] = Boid(pos, dir);
+
     }
 
 
@@ -60,8 +74,8 @@ int main() {
         return 1;
     }
     // Write some text to the file
-    for(int i=0; i<20; i++) {
-        fprintf(fptr, "%f %f\n", arr[i].x, arr[i].y);
+    for(int i=0; i<numParticles; i++) {
+        fprintf(fptr, "%f %f %f %f\n", arr[i].pos.x, arr[i].pos.y, arr[i].dir.x, arr[i].dir.y);
     }
 
     // Close the file
