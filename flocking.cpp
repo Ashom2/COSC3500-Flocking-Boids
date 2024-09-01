@@ -44,6 +44,28 @@ float randFloat(float min, float max) {
 }
 
 /*
+Saves 
+*/
+void Save(Boid arr[], int numParticles, const char *filepath) {
+    // Write vector array to file
+    // TODO use fstream (it was having problems before)
+    FILE *fptr;
+    // Create a file and open it for writing
+    fptr = fopen(filepath, "w");
+    if (fptr == NULL) {
+        printf("%s", "Error opening file");
+        //return 1;
+    }
+    // Write some text to the file
+    for(int i=0; i<numParticles; i++) {
+        fprintf(fptr, "%f %f %f %f\n", arr[i].pos.x, arr[i].pos.y, arr[i].dir.x, arr[i].dir.y);
+    }
+
+    // Close the file
+    fclose(fptr);
+}
+
+/*
 Main.
 */
 int main() {
@@ -59,27 +81,11 @@ int main() {
         Vector2D pos = Vector2D(randFloat(0, xSize), randFloat(0, ySize));
         Vector2D dir =Vector2D(randFloat(-1, 1), randFloat(-1, 1));
         arr[i] = Boid(pos, dir);
-
     }
 
+    Save(arr, numParticles, filepath);
 
-
-    // Write vector array to file
-    // TODO use fstream (it was having problems before)
-    FILE *fptr;
-    // Create a file and open it for writing
-    fptr = fopen(filepath, "w");
-    if (fptr == NULL) {
-        printf("%s", "Error opening file");
-        return 1;
-    }
-    // Write some text to the file
-    for(int i=0; i<numParticles; i++) {
-        fprintf(fptr, "%f %f %f %f\n", arr[i].pos.x, arr[i].pos.y, arr[i].dir.x, arr[i].dir.y);
-    }
-
-    // Close the file
-    fclose(fptr);
+    
 
     
 
