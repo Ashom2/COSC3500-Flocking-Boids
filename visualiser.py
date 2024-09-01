@@ -7,10 +7,10 @@ import math
 
 
 
-showDir = True
+showDir = False
 xSize = 128
 ySize = 128
-markerSize = 10
+markerSize = 1
 
 
 
@@ -77,19 +77,13 @@ arr = []
 with open("data.txt", "r") as file1:
     for line in file1.readlines():
         f_list = [float(i) for i in line.split(" ")]
-        #arr.append(Vector2D(f_list[0], f_list[1]))
         arr.append(Boid(f_list[0], f_list[1], f_list[2], f_list[3]))
 
-    # for x in arr:
-    #     print(x)
-
     # TODO this is probably the slowest way of doing this dear god
-    x, y, dx, dy = [], [], [], []
+    x, y = [], []
     for v in arr:
         x.append(v.pos.x)
         y.append(v.pos.y)
-        dx.append(v.dir.x)
-        dy.append(v.dir.y)
 
         if (showDir):
             # It is not possible to pass a list of markers to plot
@@ -103,7 +97,7 @@ with open("data.txt", "r") as file1:
         
     
     if (not showDir):
-        plt.scatter(x, y)
+        plt.scatter(x, y, s=markerSize**2)
     
     
 
