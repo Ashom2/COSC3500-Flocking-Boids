@@ -1,4 +1,7 @@
 #include <iostream>
+#include <math.h>
+
+# define PI 3.141592653589793238462643383279502884L
 
 /*
 Vector2D class for storing two-dimensional spacial vectors.
@@ -44,9 +47,17 @@ float randFloat(float min, float max) {
 }
 
 /*
+Gets a random direction represented by a normalised vector
+*/
+Vector2D randDir() {
+    float theta = randFloat(0, 2 * PI);
+    return Vector2D(cos(theta), sin(theta));
+}
+
+/*
 Saves 
 */
-void Save(Boid arr[], int numParticles, const char *filepath) {
+void save(Boid arr[], int numParticles, const char *filepath) {
     // Write vector array to file
     // TODO use fstream (it was having problems before)
     FILE *fptr;
@@ -71,7 +82,7 @@ Main.
 int main() {
     int xSize = 128;
     int ySize = 128;
-    const int numParticles = 20;
+    const int numParticles = 5000;
 
     const char *filepath = "data.txt";
 
@@ -79,11 +90,11 @@ int main() {
     Boid arr[numParticles];
     for(int i=0; i<numParticles; i++) {
         Vector2D pos = Vector2D(randFloat(0, xSize), randFloat(0, ySize));
-        Vector2D dir =Vector2D(randFloat(-1, 1), randFloat(-1, 1));
+        Vector2D dir = randDir();
         arr[i] = Boid(pos, dir);
     }
 
-    Save(arr, numParticles, filepath);
+    save(arr, numParticles, filepath);
 
     
 
