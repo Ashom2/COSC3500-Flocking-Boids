@@ -73,36 +73,57 @@ def gen_arrow_head_marker(rot):
 
 
 
-arr = []
+dataArray = []
+x, y = [], []
+frameCount = -1
 with open("data.txt", "r") as file1:
+    
     for line in file1.readlines():
-        f_list = [float(i) for i in line.split(" ")]
-        arr.append(Boid(f_list[0], f_list[1], f_list[2], f_list[3]))
+        if ("Frame " in line): #Separator
+            dataArray.append([])
+            x.append([])
+            y.append([])
+            frameCount += 1
+        else:
+            f_list = [float(i) for i in line.split(" ")]
+            dataArray[frameCount].append(Boid(f_list[0], f_list[1], f_list[2], f_list[3]))
+            x[frameCount].append(f_list[0])
+            y[frameCount].append(f_list[1])
+    frameCount += 1 #Because we started at -1
+
 
     # TODO this is probably the slowest way of doing this dear god
-    x, y = [], []
-    for v in arr:
-        x.append(v.pos.x)
-        y.append(v.pos.y)
+    # x, y = [], []
+    # for v in dataArray[0]:
+    #     x.append(v.pos.x)
+    #     y.append(v.pos.y)
 
-        if (showDir):
-            # It is not possible to pass a list of markers to plot
-            # plt.arrow(v.pos.x, v.pos.y, v.dir.x, v.dir.y, width = 1, head_starts_at_zero = True)
+    #     if (showDir):
+    #         # It is not possible to pass a list of markers to plot
+    #         # plt.arrow(v.pos.x, v.pos.y, v.dir.x, v.dir.y, width = 1, head_starts_at_zero = True)
             
-            # plt.plot(v.pos.x, v.pos.y, marker=(3, 0, 180 * math.atan2(v.dir.y, v.dir.x)), markersize=20, linestyle='None')
+    #         # plt.plot(v.pos.x, v.pos.y, marker=(3, 0, 180 * math.atan2(v.dir.y, v.dir.x)), markersize=20, linestyle='None')
         
-            marker, scale = gen_arrow_head_marker(180 * math.atan2(v.dir.y, v.dir.x))
-            plt.scatter(v.pos.x, v.pos.y, marker=marker, s=(markerSize*scale)**2, c="green")
+    #         marker, scale = gen_arrow_head_marker(180 * math.atan2(v.dir.y, v.dir.x))
+    #         plt.scatter(v.pos.x, v.pos.y, marker=marker, s=(markerSize*scale)**2, c="green")
        
         
     
-    if (not showDir):
-        plt.scatter(x, y, s=markerSize**2)
-    
-    
+    fig, ax = plt.subplots()    
+    ax.axis([0, xSize, 0, ySize])
+    ax.set_xticks(np.arange(0, xSize + 1, 16))
+    ax.set_yticks(np.arange(0, ySize + 1, 16))
+    ax.set_aspect('equal')
+    scat = ax.scatter([], [], s=(markerSize*markerSize)**2, c="green")
+        
+    def update(frame):
+        data = np.stack([x[frame], y[frame]]).T #Has to be in this format for some reason
+        scat.set_offsets(data)
+        ax.set_title("Frame " + str(frame))
+        return scat
 
-    plt.axis([0, xSize, 0, ySize])
-    plt.xticks(np.arange(0, xSize + 1, 16))
-    plt.yticks(np.arange(0, ySize + 1, 16))
-    plt.gca().set_aspect('equal')
+    anim = animation.FuncAnimation(fig=fig, func=update, frames=frameCount, interval=500)
     plt.show()
+
+    # anim.save('continuousSineWave.mp4',  
+    #       writer = 'ffmpeg', fps = 30) 
