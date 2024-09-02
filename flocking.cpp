@@ -5,10 +5,20 @@
 
 
 
+int xSize = 128;
+int ySize = 128;
+const int numParticles = 100;
+
+const char *filepath = "data.txt";
+
 // The distance within which separation occurs
-const float protectedRange = 10;
-const float avoidFactor = 1;
-const float visualRange = 20;
+const float protectedRange = 8;
+// The rate at which separation occurs
+const float avoidFactor = 0.05;
+// The distance within which alignment occurs
+const float visualRange = 40;
+// The rate at which alignment occurs
+const float matchingFactor = 0.05;
 
 
 
@@ -88,14 +98,6 @@ void save(FILE *fptr, Boid arr[], int numParticles, int frameNumber) {
 Main.
 */
 int main() {
-    int xSize = 128;
-    int ySize = 128;
-    const int numParticles = 100;
-
-    const char *filepath = "data.txt";
-
-
-
     // Create a file and open it for writing
     FILE *fptr;
     fptr = fopen(filepath, "w");
@@ -121,7 +123,7 @@ int main() {
         for(int i=0; i<numParticles; i++) {
             Boid& b = arr[i];
 
-            // 1. Separation
+            // 1. Separation - attempt to avoid other close boids
             float close_dx = 0, close_dy = 0;
             // Loop through every other boid
             for(int j=0; j<numParticles; j++) {
@@ -129,13 +131,41 @@ int main() {
 
                 Boid& o = arr[j];
 
-                if (b.pos.distanceTo(o.pos) < protectedRange) { //If the distance is less than protected range
+                // If the distance is less than protected range
+                if (b.pos.distanceTo(o.pos) < protectedRange) { 
                     close_dx += b.pos.x - o.pos.x;
                     close_dy += b.pos.y - o.pos.y;
                 }
             }
             b.dir.x += close_dx * avoidFactor;
             b.dir.y += close_dy * avoidFactor;
+            //---------------------------------------
+
+            // 2. Alignment - attempt to match velocity of nearby boids
+            float avg_xvel = 0, avg_yvel = 0;
+            int neighboringBoids = 0;
+            // Loop through every other boid
+            for(int j=0; j<numParticles; j++) {
+                if (i == j) continue; //Ignore itself
+
+                Boid& o = arr[j];
+
+                // If the distance to other boid is less than visual range
+                if (b.pos.distanceTo(o.pos) < visualRange) { 
+                    avg_xvel += o.dir.x;
+                    avg_yvel += o.dir.y;
+                    neighboringBoids++;
+                }
+            }
+            // Get the mean velocity of all boids in visual range
+            if (neighboringBoids > 0) {
+                avg_xvel = avg_xvel / neighboringBoids;
+                avg_yvel = avg_yvel / neighboringBoids;
+            }
+            b.dir.x += (avg_xvel - b.dir.x) * matchingFactor;
+            b.dir.y += (avg_yvel - b.dir.y) * matchingFactor;
+            //---------------------------------------
+
 
             b.pos = b.pos + b.dir;
         }
