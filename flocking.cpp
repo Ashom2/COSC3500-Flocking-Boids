@@ -20,6 +20,10 @@ class Vector2D {
             this->x = x;
             this->y = y;
         }
+
+        Vector2D operator+ (const Vector2D & first) const {
+            return Vector2D(x + first.x, y + first.y);
+        }
 };
 
 /*
@@ -98,10 +102,12 @@ int main() {
     save(fptr, arr, numParticles, 0);
 
     // Motion test
-    for(int i=0; i<numParticles; i++) {
-        arr[i].pos.x += 5;
+    for (int j=1; j<30; j++) {
+        for(int i=0; i<numParticles; i++) {
+            arr[i].pos = arr[i].pos + Vector2D(1, 1); //TODO overload += operator
+        }
+        save(fptr, arr, numParticles, j);
     }
-    save(fptr, arr, numParticles, 1);
 
     
     // Close the file
