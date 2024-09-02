@@ -57,7 +57,7 @@ Vector2D randDir() {
 /*
 Saves 
 */
-void save(Boid arr[], int numParticles, const char *filepath) {
+void save(Boid arr[], int numParticles, const char *filepath, int frameNumber) {
     // Write vector array to file
     // TODO use fstream (it was having problems before)
     FILE *fptr;
@@ -68,6 +68,7 @@ void save(Boid arr[], int numParticles, const char *filepath) {
         //return 1;
     }
     // Write some text to the file
+    fprintf(fptr, "Frame %d\n", frameNumber);
     for(int i=0; i<numParticles; i++) {
         fprintf(fptr, "%f %f %f %f\n", arr[i].pos.x, arr[i].pos.y, arr[i].dir.x, arr[i].dir.y);
     }
@@ -94,7 +95,7 @@ int main() {
         arr[i] = Boid(pos, dir);
     }
 
-    save(arr, numParticles, filepath);
+    save(arr, numParticles, filepath, 0);
 
     
 
