@@ -5,8 +5,8 @@
 
 
 
-int xSize = 128;
-int ySize = 128;
+int xSize = 512;
+int ySize = 512;
 const int numParticles = 100;
 
 const char *filepath = "data.txt";
@@ -180,10 +180,13 @@ int main() {
 
 
             // Impose speed limit
-            float speed = sqrt(b.dir.x * b.dir.y + b.dir.x * b.dir.y);
+            float speed = sqrt(b.dir.x * b.dir.x + b.dir.y * b.dir.y);
             if (speed > maxSpeed) {
                 b.dir.x = (b.dir.x / speed) * maxSpeed;
                 b.dir.y = (b.dir.y / speed) * maxSpeed;
+            }
+            else if (speed == 0) {
+                // TODO
             }
             else if (speed < minSpeed) {
                 b.dir.x = (b.dir.x / speed) * minSpeed;
@@ -192,6 +195,9 @@ int main() {
             //---------------------------------------
 
             b.pos = b.pos + b.dir;
+            // arr[i].pos = b.pos;
+            // arr[i].dir = b.dir;
+            // arr[i].pos = arr[i].pos + arr[i].dir;
         }
         save(fptr, arr, numParticles, frame);
     }
