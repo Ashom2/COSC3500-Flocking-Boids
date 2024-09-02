@@ -51,6 +51,14 @@ class Vector2D {
             return sqrt(dx * dy + dx * dy);
         }
 
+        float magnitude() {
+            return sqrt(x * x + y * y);
+        }
+
+        float sqrMagnitude() {
+            return x * x + y * y;
+        }
+
         Vector2D operator+ (const Vector2D& other) const {
             return Vector2D(x + other.x, y + other.y);
         }
@@ -180,7 +188,7 @@ int main() {
 
 
             // Impose speed limit
-            float speed = sqrt(b.dir.x * b.dir.x + b.dir.y * b.dir.y);
+            float speed = b.dir.magnitude();
             if (speed > maxSpeed) {
                 b.dir.x = (b.dir.x / speed) * maxSpeed;
                 b.dir.y = (b.dir.y / speed) * maxSpeed;
