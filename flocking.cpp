@@ -3,6 +3,15 @@
 
 # define PI 3.141592653589793238462643383279502884L
 
+
+
+// The distance within which separation occurs
+const float protectedRange = 10;
+const float avoidFactor = 1;
+const float visualRange = 20;
+
+
+
 /*
 Vector2D class for storing two-dimensional spacial vectors.
 */
@@ -21,8 +30,14 @@ class Vector2D {
             this->y = y;
         }
 
-        Vector2D operator+ (const Vector2D & first) const {
-            return Vector2D(x + first.x, y + first.y);
+        float distanceTo(Vector2D other) {
+            float dx = x - other.x;
+            float dy = y - other.y;
+            return sqrt(dx * dy + dx * dy);
+        }
+
+        Vector2D operator+ (const Vector2D & other) const {
+            return Vector2D(x + other.x, y + other.y);
         }
 };
 
@@ -101,12 +116,30 @@ int main() {
 
     save(fptr, arr, numParticles, 0);
 
-    // Motion test
-    for (int j=1; j<30; j++) {
+    // Update boids
+    for (int frame=1; frame<50; frame++) {
         for(int i=0; i<numParticles; i++) {
-            arr[i].pos = arr[i].pos + Vector2D(1, 1); //TODO overload += operator
+            Boid& b = arr[i];
+
+            // 1. Separation
+            float close_dx = 0, close_dy = 0;
+            // Loop through every other boid
+            for(int j=0; j<numParticles; j++) {
+                if (i == j) continue; //Ignore itself
+
+                Boid& o = arr[j];
+
+                if (b.pos.distanceTo(o.pos) < protectedRange) { //If the distance is less than protected range
+                    close_dx += b.pos.x - o.pos.x;
+                    close_dy += b.pos.y - o.pos.y;
+                }
+            }
+            b.dir.x += close_dx * avoidFactor;
+            b.dir.y += close_dy * avoidFactor;
+
+            b.pos = b.pos + b.dir;
         }
-        save(fptr, arr, numParticles, j);
+        save(fptr, arr, numParticles, frame);
     }
 
     
