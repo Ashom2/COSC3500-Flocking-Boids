@@ -19,6 +19,11 @@ const float avoidFactor = 0.05;
 const float visualRange = 40;
 // The rate at which alignment occurs
 const float matchingFactor = 0.05;
+// The minimum speed of the boids
+const float minSpeed = 1;
+// The maximum speed of the boids
+const float maxSpeed = 3;
+
 
 
 
@@ -108,12 +113,12 @@ int main() {
 
 
 
-    // Initialise vector array
+    // Initialise array of boids
     Boid arr[numParticles];
     for(int i=0; i<numParticles; i++) {
         Vector2D pos = Vector2D(randFloat(0, xSize), randFloat(0, ySize));
         Vector2D dir = randDir();
-        arr[i] = Boid(pos, dir);
+        arr[i] = Boid(pos, Vector2D(dir.x * minSpeed, dir.y * minSpeed));
     }
 
     save(fptr, arr, numParticles, 0);
@@ -141,6 +146,8 @@ int main() {
             b.dir.y += close_dy * avoidFactor;
             //---------------------------------------
 
+
+
             // 2. Alignment - attempt to match velocity of nearby boids
             float avg_xvel = 0, avg_yvel = 0;
             int neighboringBoids = 0;
@@ -166,6 +173,19 @@ int main() {
             b.dir.y += (avg_yvel - b.dir.y) * matchingFactor;
             //---------------------------------------
 
+
+
+            // Impose speed limit
+            float speed = sqrt(b.dir.x * b.dir.y + b.dir.x * b.dir.y);
+            if (speed > maxSpeed) {
+                b.dir.x = (b.dir.x / speed) * maxSpeed;
+                b.dir.y = (b.dir.y / speed) * maxSpeed;
+            }
+            else if (speed < minSpeed) {
+                b.dir.x = (b.dir.x / speed) * minSpeed;
+                b.dir.y = (b.dir.y / speed) * minSpeed;
+            }
+            //---------------------------------------
 
             b.pos = b.pos + b.dir;
         }
