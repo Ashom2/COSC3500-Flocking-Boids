@@ -57,24 +57,12 @@ Vector2D randDir() {
 /*
 Saves 
 */
-void save(Boid arr[], int numParticles, const char *filepath, int frameNumber) {
+void save(FILE *fptr, Boid arr[], int numParticles, int frameNumber) {
     // Write vector array to file
-    // TODO use fstream (it was having problems before)
-    FILE *fptr;
-    // Create a file and open it for writing
-    fptr = fopen(filepath, "w");
-    if (fptr == NULL) {
-        printf("%s", "Error opening file");
-        //return 1;
-    }
-    // Write some text to the file
     fprintf(fptr, "Frame %d\n", frameNumber);
     for(int i=0; i<numParticles; i++) {
         fprintf(fptr, "%f %f %f %f\n", arr[i].pos.x, arr[i].pos.y, arr[i].dir.x, arr[i].dir.y);
-    }
-
-    // Close the file
-    fclose(fptr);
+    }    
 }
 
 /*
@@ -83,9 +71,21 @@ Main.
 int main() {
     int xSize = 128;
     int ySize = 128;
-    const int numParticles = 5000;
+    const int numParticles = 100;
 
     const char *filepath = "data.txt";
+
+
+
+    // Create a file and open it for writing
+    FILE *fptr;
+    fptr = fopen(filepath, "w");
+    if (fptr == NULL) {
+        printf("%s", "Error opening file");
+        return 1;
+    }
+
+
 
     // Initialise vector array
     Boid arr[numParticles];
@@ -95,11 +95,18 @@ int main() {
         arr[i] = Boid(pos, dir);
     }
 
-    save(arr, numParticles, filepath, 0);
+    save(fptr, arr, numParticles, 0);
+
+    // Motion test
+    for(int i=0; i<numParticles; i++) {
+        arr[i].pos.x += 5;
+    }
+    save(fptr, arr, numParticles, 1);
 
     
+    // Close the file
+    fclose(fptr);
 
-    
 
     return 0;
 }
