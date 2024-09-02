@@ -8,8 +8,8 @@ import math
 
 
 showDir = False
-xSize = 128
-ySize = 128
+xSize = 512
+ySize = 512
 markerSize = 1
 
 
@@ -111,8 +111,8 @@ with open("data.txt", "r") as file1:
     
     fig, ax = plt.subplots()    
     ax.axis([0, xSize, 0, ySize])
-    ax.set_xticks(np.arange(0, xSize + 1, 16))
-    ax.set_yticks(np.arange(0, ySize + 1, 16))
+    ax.set_xticks(np.arange(0, xSize + 1, xSize / 8))
+    ax.set_yticks(np.arange(0, ySize + 1, xSize / 8))
     ax.set_aspect('equal')
     scat = ax.scatter([], [], s=(markerSize*markerSize)**2, c="green")
         
@@ -122,7 +122,7 @@ with open("data.txt", "r") as file1:
         ax.set_title("Frame " + str(frame))
         return scat
 
-    anim = animation.FuncAnimation(fig=fig, func=update, frames=frameCount, interval=500)
+    anim = animation.FuncAnimation(fig=fig, func=update, frames=frameCount, interval=50)
     plt.show()
 
     # anim.save('continuousSineWave.mp4',  
