@@ -51,8 +51,12 @@ class Vector2D {
             return sqrt(dx * dy + dx * dy);
         }
 
-        Vector2D operator+ (const Vector2D & other) const {
+        Vector2D operator+ (const Vector2D& other) const {
             return Vector2D(x + other.x, y + other.y);
+        }
+
+        Vector2D operator* (const float& other) const {
+            return Vector2D(x * other, y * other);
         }
 };
 
@@ -117,8 +121,8 @@ int main() {
     Boid arr[numParticles];
     for(int i=0; i<numParticles; i++) {
         Vector2D pos = Vector2D(randFloat(0, xSize), randFloat(0, ySize));
-        Vector2D dir = randDir();
-        arr[i] = Boid(pos, Vector2D(dir.x * minSpeed, dir.y * minSpeed));
+        Vector2D dir = randDir() * minSpeed;
+        arr[i] = Boid(pos, dir);
     }
 
     save(fptr, arr, numParticles, 0);
