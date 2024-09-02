@@ -7,7 +7,7 @@
 
 int xSize = 512;
 int ySize = 512;
-const int numParticles = 100;
+const int numParticles = 1000;
 
 const char *filepath = "data.txt";
 
@@ -19,6 +19,8 @@ const float avoidFactor = 0.05;
 const float visualRange = 40;
 // The rate at which alignment occurs
 const float matchingFactor = 0.05;
+// The rate at which cohesion occurs
+const float cohesionFactor = 0.0005;
 // The minimum speed of the boids
 const float minSpeed = 1;
 // The maximum speed of the boids
@@ -136,7 +138,7 @@ int main() {
     save(fptr, arr, numParticles, 0);
 
     // Update boids
-    for (int frame=1; frame<50; frame++) {
+    for (int frame=1; frame<100; frame++) {
         for(int i=0; i<numParticles; i++) {
             Boid& b = arr[i];
 
@@ -187,7 +189,32 @@ int main() {
 
 
 
-            // Impose speed limit
+            // 3. Cohesion - turn towards the center of mass of other boids
+            // Loop through every other boid
+            float avg_xpos = 0, avg_ypos = 0;
+            neighboringBoids = 0;
+            for(int j=0; j<numParticles; j++) {
+                if (i == j) continue; //Ignore itself
+
+                Boid& o = arr[j];
+
+                // If the distance to other boid is less than visual range
+                if (b.pos.distanceTo(o.pos) < visualRange) { 
+                    avg_xpos += o.pos.x;
+                    avg_ypos += o.pos.y;
+                    neighboringBoids++;
+                }
+            }
+            // Get the mean position of all boids in visual range
+            if (neighboringBoids > 0) {
+                avg_xpos = avg_xpos / neighboringBoids;
+                avg_ypos = avg_ypos / neighboringBoids;
+            }
+            b.dir.x += (avg_xpos - b.pos.x) * cohesionFactor;
+            b.dir.y += (avg_ypos - b.pos.y) * cohesionFactor;
+            //---------------------------------------
+
+            // Impose speed limit on boid
             float speed = b.dir.magnitude();
             if (speed > maxSpeed) {
                 b.dir.x = (b.dir.x / speed) * maxSpeed;
@@ -202,6 +229,9 @@ int main() {
             }
             //---------------------------------------
 
+
+
+            // Update boid position
             b.pos = b.pos + b.dir;
             // arr[i].pos = b.pos;
             // arr[i].dir = b.dir;
