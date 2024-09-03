@@ -108,86 +108,52 @@ int main() {
         for(int i=0; i<numParticles; i++) {
             Boid& b = arr[i];
 
-            // 1. Separation - attempt to avoid other close boids
             float close_dx = 0, close_dy = 0;
-            // Loop through every other boid
-            for(int j=0; j<numParticles; j++) {
-                if (i == j) continue; //Ignore itself
-
-                Boid& o = arr[j];
-
-                // If the distance is less than protected range
-                float dx = b.px - o.px;
-                float dy = b.py - o.py;
-                float dist = sqrt(dx * dx + dy * dy);
-                if (dist < protectedRange) { 
-                    close_dx += b.px - o.px;
-                    close_dy += b.py - o.py;
-                }
-            }
-            b.vx += close_dx * avoidFactor;
-            b.vy += close_dy * avoidFactor;
-            //---------------------------------------
-
-
-
-            // 2. Alignment - attempt to match velocity of nearby boids
             float avg_xvel = 0, avg_yvel = 0;
+            float avg_xpos = 0, avg_ypos = 0;
             int neighboringBoids = 0;
             // Loop through every other boid
             for(int j=0; j<numParticles; j++) {
                 if (i == j) continue; //Ignore itself
-
+                
                 Boid& o = arr[j];
 
-                // If the distance to other boid is less than visual range
                 float dx = b.px - o.px;
                 float dy = b.py - o.py;
                 float dist = sqrt(dx * dx + dy * dy);
-                if (dist < visualRange) { 
+                if (dist < protectedRange) { // If the distance is less than protected range
+                    close_dx += b.px - o.px;
+                    close_dy += b.py - o.py;
+                }
+                if (dist < visualRange) { // If the distance is less than visual range
                     avg_xvel += o.vx;
                     avg_yvel += o.vy;
+                    avg_xpos += o.px;
+                    avg_ypos += o.py;
                     neighboringBoids++;
                 }
             }
-            // Get the mean velocity of all boids in visual range
+
+            // Separation - move away from nearby boids
+            b.vx += close_dx * avoidFactor;
+            b.vy += close_dy * avoidFactor;
+
+            // Alignment - get the mean velocity of all boids in visual range
             if (neighboringBoids > 0) {
                 avg_xvel = avg_xvel / neighboringBoids;
                 avg_yvel = avg_yvel / neighboringBoids;
             }
             b.vx += (avg_xvel - b.vx) * matchingFactor;
             b.vy += (avg_yvel - b.vy) * matchingFactor;
-            //---------------------------------------
 
-
-
-            // 3. Cohesion - turn towards the center of mass of other boids
-            float avg_xpos = 0, avg_ypos = 0;
-            neighboringBoids = 0;
-            // Loop through every other boid
-            for(int j=0; j<numParticles; j++) {
-                if (i == j) continue; //Ignore itself
-
-                Boid& o = arr[j];
-
-                // If the distance to other boid is less than visual range
-                float dx = b.px - o.px;
-                float dy = b.py - o.py;
-                float dist = sqrt(dx * dx + dy * dy);
-                if (dist < visualRange) { 
-                    avg_xpos += o.px;
-                    avg_ypos += o.py;
-                    neighboringBoids++;
-                }
-            }
-            // Get the mean position of all boids in visual range
+            // Cohesion - get the mean position of all boids in visual range
             if (neighboringBoids > 0) {
                 avg_xpos = avg_xpos / neighboringBoids;
                 avg_ypos = avg_ypos / neighboringBoids;
             }
             b.vx += (avg_xpos - b.px) * cohesionFactor;
             b.vy += (avg_ypos - b.py) * cohesionFactor;
-            //---------------------------------------
+
 
 
 
