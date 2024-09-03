@@ -11,12 +11,12 @@ int leftMargin = 32;
 int rightMargin = 480;
 int bottomMargin = 32;
 int topMargin = 480;
-const int numParticles = 100;
+const int numParticles = 400;
 
 const char *filepath = "data.txt";
 
 // How hard the boid can turn to avoid walls
-const float turnFactor = 1;
+const float turnFactor = 0.2;
 // The distance within which separation occurs
 const float protectedRange = 8;
 // The rate at which separation occurs
@@ -56,7 +56,7 @@ class Vector2D {
         float distanceTo(Vector2D other) {
             float dx = x - other.x;
             float dy = y - other.y;
-            return sqrt(dx * dy + dx * dy);
+            return sqrt(dx * dx + dy * dy);
         }
 
         float magnitude() {
@@ -257,10 +257,14 @@ int main() {
 
 
             // Update boid position
-            b.pos = b.pos + b.dir;
+            // b.pos = b.pos + b.dir;
             // arr[i].pos = b.pos;
             // arr[i].dir = b.dir;
             // arr[i].pos = arr[i].pos + arr[i].dir;
+        }
+        for(int i=0; i<numParticles; i++) {
+            Boid& b = arr[i];
+            b.pos = b.pos + b.dir;
         }
         save(fptr, arr, numParticles, frame);
     }
