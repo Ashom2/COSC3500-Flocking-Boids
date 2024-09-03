@@ -5,12 +5,18 @@
 
 
 
-int xSize = 512;
-int ySize = 512;
-const int numParticles = 1000;
+const int xSize = 512;
+const int ySize = 512;
+int leftMargin = 32;
+int rightMargin = 480;
+int bottomMargin = 32;
+int topMargin = 480;
+const int numParticles = 100;
 
 const char *filepath = "data.txt";
 
+// How hard the boid can turn to avoid walls
+const float turnFactor = 1;
 // The distance within which separation occurs
 const float protectedRange = 8;
 // The rate at which separation occurs
@@ -22,9 +28,9 @@ const float matchingFactor = 0.05;
 // The rate at which cohesion occurs
 const float cohesionFactor = 0.0005;
 // The minimum speed of the boids
-const float minSpeed = 1;
+const float minSpeed = 3;
 // The maximum speed of the boids
-const float maxSpeed = 3;
+const float maxSpeed = 6;
 
 
 
@@ -138,7 +144,7 @@ int main() {
     save(fptr, arr, numParticles, 0);
 
     // Update boids
-    for (int frame=1; frame<100; frame++) {
+    for (int frame=1; frame<300; frame++) {
         for(int i=0; i<numParticles; i++) {
             Boid& b = arr[i];
 
@@ -190,9 +196,9 @@ int main() {
 
 
             // 3. Cohesion - turn towards the center of mass of other boids
-            // Loop through every other boid
             float avg_xpos = 0, avg_ypos = 0;
             neighboringBoids = 0;
+            // Loop through every other boid
             for(int j=0; j<numParticles; j++) {
                 if (i == j) continue; //Ignore itself
 
@@ -213,6 +219,25 @@ int main() {
             b.dir.x += (avg_xpos - b.pos.x) * cohesionFactor;
             b.dir.y += (avg_ypos - b.pos.y) * cohesionFactor;
             //---------------------------------------
+
+
+
+            // Avoid edges
+            if (b.pos.x < leftMargin) {
+                b.dir.x += turnFactor;
+            }
+            else if (b.pos.x > rightMargin) {
+                b.dir.x -= turnFactor;
+            }
+            if (b.pos.y < bottomMargin) {
+                b.dir.y += turnFactor;
+            }
+            else if (b.pos.y > topMargin) {
+                b.dir.y -= turnFactor;
+            }
+            //---------------------------------------
+
+
 
             // Impose speed limit on boid
             float speed = b.dir.magnitude();
