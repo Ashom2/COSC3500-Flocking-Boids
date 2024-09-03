@@ -122,8 +122,7 @@ with open("data.txt", "r") as file1:
         ax.set_title("Frame " + str(frame))
         return scat
 
-    anim = animation.FuncAnimation(fig=fig, func=update, frames=frameCount, interval=50)
-    plt.show()
-
-    # anim.save('continuousSineWave.mp4',  
-    #       writer = 'ffmpeg', fps = 30) 
+    anim = animation.FuncAnimation(fig=fig, func=update, frames=frameCount, interval=40)
+    anim.save('test.gif', writer='pillow', fps=30) 
+    
+    #plt.show()
