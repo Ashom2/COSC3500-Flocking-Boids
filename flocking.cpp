@@ -1,7 +1,7 @@
 #include <iostream>
 #include <math.h>
 
-# define PI 3.141592653589793238462643383279502884L
+const float PI = 3.141592653589793238462643383279502884;
 
 
 
@@ -11,7 +11,7 @@ int leftMargin = 64;
 int rightMargin = xSize - 64;
 int bottomMargin = 64;
 int topMargin = ySize - 64;
-const int numParticles = 400;
+const int numParticles = 300;
 
 const char *filepath = "data.txt";
 
@@ -31,6 +31,8 @@ const float cohesionFactor = 0.0005;
 const float minSpeed = 3;
 // The maximum speed of the boids
 const float maxSpeed = 6;
+// The formation angle
+const float formationAngle = PI;
 
 
 
@@ -76,6 +78,23 @@ void save(FILE *fptr, Boid arr[], int numParticles, int frameNumber) {
 }
 
 /*
+Vector dot product
+*/
+float dot(float x1, float y1, float x2, float y2) {
+    return x1 * x2 + y1 * y2;
+}
+
+/*
+Gets the cosine of the angle between vectors
+*/
+float cosAngle(float x1, float y1, float x2, float y2) {
+    float dot = x1 * x2 + y1 * y2;
+    float mag1 = sqrt(x1 * x1 + y1 * y1);
+    float mag2 = sqrt(x2 * x2 + y2 * y2);
+    return dot / mag1 / mag2;
+}
+
+/*
 Main.
 */
 int main() {
@@ -108,9 +127,9 @@ int main() {
         for(int i=0; i<numParticles; i++) {
             Boid& b = arr[i];
 
-            float close_dx = 0, close_dy = 0;
-            float avg_xvel = 0, avg_yvel = 0;
-            float avg_xpos = 0, avg_ypos = 0;
+            float avoidVector_x = 0, avoidVector_y = 0;
+            float formationDir_x = 0, formationDir_y = 0;
+            float formationPos_x = 0, formationPos_y = 0;
             int neighboringBoids = 0;
             // Loop through every other boid
             for(int j=0; j<numParticles; j++) {
@@ -122,35 +141,41 @@ int main() {
                 float dy = b.py - o.py;
                 float dist = sqrt(dx * dx + dy * dy);
                 if (dist < protectedRange) { // If the distance is less than protected range
-                    close_dx += b.px - o.px;
-                    close_dy += b.py - o.py;
+                    avoidVector_x += b.px - o.px;
+                    avoidVector_y += b.py - o.py;
                 }
                 if (dist < visualRange) { // If the distance is less than visual range
-                    avg_xvel += o.vx;
-                    avg_yvel += o.vy;
-                    avg_xpos += o.px;
-                    avg_ypos += o.py;
+                    formationDir_x += o.vx;
+                    formationDir_y += o.vy;
+                    formationPos_x += o.px;
+                    formationPos_y += o.py;
                     neighboringBoids++;
                 }
             }
 
             // Separation - move away from nearby boids
-            b.vx += close_dx * avoidFactor;
-            b.vy += close_dy * avoidFactor;
+            b.vx += avoidVector_x * avoidFactor;
+            b.vy += avoidVector_y * avoidFactor;
 
             if (neighboringBoids > 0) {
-                avg_xvel = avg_xvel / neighboringBoids;
-                avg_yvel = avg_yvel / neighboringBoids;
-                avg_xpos = avg_xpos / neighboringBoids;
-                avg_ypos = avg_ypos / neighboringBoids;
+                formationDir_x = formationDir_x / neighboringBoids;
+                formationDir_y = formationDir_y / neighboringBoids;
+                formationPos_x = formationPos_x / neighboringBoids;
+                formationPos_y = formationPos_y / neighboringBoids;  
+            }
+            else {
+                formationDir_x = b.vx;
+                formationDir_y = b.vy;
+                formationPos_x = b.px;
+                formationPos_y = b.py; 
             }
             // Alignment - match the mean velocity of all boids in visual range
-            b.vx += (avg_xvel - b.vx) * matchingFactor;
-            b.vy += (avg_yvel - b.vy) * matchingFactor;
+            b.vx += (formationDir_x - b.vx) * matchingFactor;
+            b.vy += (formationDir_y - b.vy) * matchingFactor;
 
             // Cohesion - get the mean position of all boids in visual range
-            b.vx += (avg_xpos - b.px) * cohesionFactor;
-            b.vy += (avg_ypos - b.py) * cohesionFactor;
+            b.vx += (formationPos_x - b.px) * cohesionFactor;
+            b.vy += (formationPos_y - b.py) * cohesionFactor;
 
 
 
