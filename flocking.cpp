@@ -7,10 +7,10 @@
 
 const int xSize = 512;
 const int ySize = 512;
-int leftMargin = 32;
-int rightMargin = 480;
-int bottomMargin = 32;
-int topMargin = 480;
+int leftMargin = 64;
+int rightMargin = xSize - 64;
+int bottomMargin = 64;
+int topMargin = ySize - 64;
 const int numParticles = 400;
 
 const char *filepath = "data.txt";
@@ -34,64 +34,28 @@ const float maxSpeed = 6;
 
 
 
-
-/*
-Vector2D class for storing two-dimensional spacial vectors.
-*/
-class Vector2D {
-    public:
-        float x;
-        float y;
-
-        Vector2D() {
-            this->x = 0;
-            this->y = 0;
-        }
-
-        Vector2D(float x, float y) {
-            this->x = x;
-            this->y = y;
-        }
-
-        float distanceTo(Vector2D other) {
-            float dx = x - other.x;
-            float dy = y - other.y;
-            return sqrt(dx * dx + dy * dy);
-        }
-
-        float magnitude() {
-            return sqrt(x * x + y * y);
-        }
-
-        float sqrMagnitude() {
-            return x * x + y * y;
-        }
-
-        Vector2D operator+ (const Vector2D& other) const {
-            return Vector2D(x + other.x, y + other.y);
-        }
-
-        Vector2D operator* (const float& other) const {
-            return Vector2D(x * other, y * other);
-        }
-};
-
 /*
 Boid class to represent a single bird / particle / actor
 */
 class Boid {
     public:
-        Vector2D pos;
-        Vector2D dir;
+        float px;
+        float py;
+        float vx;
+        float vy;
 
         Boid() {
-            this->pos = Vector2D();
-            this->dir = Vector2D();
+            this->px = 0;
+            this->py = 0;
+            this->vx = 0;
+            this->vy = 0;
         }
     
-        Boid(Vector2D pos, Vector2D dir) {
-            this->pos = pos;
-            this->dir = dir;
+        Boid(float px, float py, float vx, float vy) {
+            this->px = px;
+            this->py = py;
+            this->vx = vx;
+            this->vy = vy;
         }
 };
 
@@ -101,21 +65,13 @@ float randFloat(float min, float max) {
 }
 
 /*
-Gets a random direction represented by a normalised vector
-*/
-Vector2D randDir() {
-    float theta = randFloat(0, 2 * PI);
-    return Vector2D(cos(theta), sin(theta));
-}
-
-/*
 Saves 
 */
 void save(FILE *fptr, Boid arr[], int numParticles, int frameNumber) {
     // Write vector array to file
     fprintf(fptr, "Frame %d\n", frameNumber);
     for(int i=0; i<numParticles; i++) {
-        fprintf(fptr, "%f %f %f %f\n", arr[i].pos.x, arr[i].pos.y, arr[i].dir.x, arr[i].dir.y);
+        fprintf(fptr, "%f %f %f %f\n", arr[i].px, arr[i].py, arr[i].vx, arr[i].vy);
     }    
 }
 
@@ -136,9 +92,13 @@ int main() {
     // Initialise array of boids
     Boid arr[numParticles];
     for(int i=0; i<numParticles; i++) {
-        Vector2D pos = Vector2D(randFloat(0, xSize), randFloat(0, ySize));
-        Vector2D dir = randDir() * minSpeed;
-        arr[i] = Boid(pos, dir);
+        float px = randFloat(0, xSize);
+        float py = randFloat(0, ySize);
+        // Random normalised direction
+        float randTheta = randFloat(0, 2 * PI);
+        float vx = cos(randTheta) * minSpeed;
+        float vy = sin(randTheta) * minSpeed;
+        arr[i] = Boid(px, py, vx, vy);
     }
 
     save(fptr, arr, numParticles, 0);
@@ -157,13 +117,16 @@ int main() {
                 Boid& o = arr[j];
 
                 // If the distance is less than protected range
-                if (b.pos.distanceTo(o.pos) < protectedRange) { 
-                    close_dx += b.pos.x - o.pos.x;
-                    close_dy += b.pos.y - o.pos.y;
+                float dx = b.px - o.px;
+                float dy = b.py - o.py;
+                float dist = sqrt(dx * dx + dy * dy);
+                if (dist < protectedRange) { 
+                    close_dx += b.px - o.px;
+                    close_dy += b.py - o.py;
                 }
             }
-            b.dir.x += close_dx * avoidFactor;
-            b.dir.y += close_dy * avoidFactor;
+            b.vx += close_dx * avoidFactor;
+            b.vy += close_dy * avoidFactor;
             //---------------------------------------
 
 
@@ -178,9 +141,12 @@ int main() {
                 Boid& o = arr[j];
 
                 // If the distance to other boid is less than visual range
-                if (b.pos.distanceTo(o.pos) < visualRange) { 
-                    avg_xvel += o.dir.x;
-                    avg_yvel += o.dir.y;
+                float dx = b.px - o.px;
+                float dy = b.py - o.py;
+                float dist = sqrt(dx * dx + dy * dy);
+                if (dist < visualRange) { 
+                    avg_xvel += o.vx;
+                    avg_yvel += o.vy;
                     neighboringBoids++;
                 }
             }
@@ -189,8 +155,8 @@ int main() {
                 avg_xvel = avg_xvel / neighboringBoids;
                 avg_yvel = avg_yvel / neighboringBoids;
             }
-            b.dir.x += (avg_xvel - b.dir.x) * matchingFactor;
-            b.dir.y += (avg_yvel - b.dir.y) * matchingFactor;
+            b.vx += (avg_xvel - b.vx) * matchingFactor;
+            b.vy += (avg_yvel - b.vy) * matchingFactor;
             //---------------------------------------
 
 
@@ -205,9 +171,12 @@ int main() {
                 Boid& o = arr[j];
 
                 // If the distance to other boid is less than visual range
-                if (b.pos.distanceTo(o.pos) < visualRange) { 
-                    avg_xpos += o.pos.x;
-                    avg_ypos += o.pos.y;
+                float dx = b.px - o.px;
+                float dy = b.py - o.py;
+                float dist = sqrt(dx * dx + dy * dy);
+                if (dist < visualRange) { 
+                    avg_xpos += o.px;
+                    avg_ypos += o.py;
                     neighboringBoids++;
                 }
             }
@@ -216,56 +185,51 @@ int main() {
                 avg_xpos = avg_xpos / neighboringBoids;
                 avg_ypos = avg_ypos / neighboringBoids;
             }
-            b.dir.x += (avg_xpos - b.pos.x) * cohesionFactor;
-            b.dir.y += (avg_ypos - b.pos.y) * cohesionFactor;
+            b.vx += (avg_xpos - b.px) * cohesionFactor;
+            b.vy += (avg_ypos - b.py) * cohesionFactor;
             //---------------------------------------
 
 
 
             // Avoid edges
-            if (b.pos.x < leftMargin) {
-                b.dir.x += turnFactor;
+            if (b.px < leftMargin) {
+                b.vx += turnFactor;
             }
-            else if (b.pos.x > rightMargin) {
-                b.dir.x -= turnFactor;
+            else if (b.px > rightMargin) {
+                b.vx -= turnFactor;
             }
-            if (b.pos.y < bottomMargin) {
-                b.dir.y += turnFactor;
+            if (b.py < bottomMargin) {
+                b.vy += turnFactor;
             }
-            else if (b.pos.y > topMargin) {
-                b.dir.y -= turnFactor;
+            else if (b.py > topMargin) {
+                b.vy -= turnFactor;
             }
             //---------------------------------------
 
 
 
             // Impose speed limit on boid
-            float speed = b.dir.magnitude();
+            float speed = sqrt(b.vx * b.vx + b.vy * b.vy);
             if (speed > maxSpeed) {
-                b.dir.x = (b.dir.x / speed) * maxSpeed;
-                b.dir.y = (b.dir.y / speed) * maxSpeed;
+                b.vx = (b.vx / speed) * maxSpeed;
+                b.vy = (b.vy / speed) * maxSpeed;
             }
             else if (speed == 0) {
                 // TODO
             }
             else if (speed < minSpeed) {
-                b.dir.x = (b.dir.x / speed) * minSpeed;
-                b.dir.y = (b.dir.y / speed) * minSpeed;
+                b.vx = (b.vx / speed) * minSpeed;
+                b.vy = (b.vy / speed) * minSpeed;
             }
             //---------------------------------------
 
 
 
             // Update boid position
-            // b.pos = b.pos + b.dir;
-            // arr[i].pos = b.pos;
-            // arr[i].dir = b.dir;
-            // arr[i].pos = arr[i].pos + arr[i].dir;
+            b.px = b.px + b.vx;
+            b.py = b.py + b.vy;
         }
-        for(int i=0; i<numParticles; i++) {
-            Boid& b = arr[i];
-            b.pos = b.pos + b.dir;
-        }
+
         save(fptr, arr, numParticles, frame);
     }
 
