@@ -138,19 +138,17 @@ int main() {
             b.vx += close_dx * avoidFactor;
             b.vy += close_dy * avoidFactor;
 
-            // Alignment - get the mean velocity of all boids in visual range
             if (neighboringBoids > 0) {
                 avg_xvel = avg_xvel / neighboringBoids;
                 avg_yvel = avg_yvel / neighboringBoids;
+                avg_xpos = avg_xpos / neighboringBoids;
+                avg_ypos = avg_ypos / neighboringBoids;
             }
+            // Alignment - match the mean velocity of all boids in visual range
             b.vx += (avg_xvel - b.vx) * matchingFactor;
             b.vy += (avg_yvel - b.vy) * matchingFactor;
 
             // Cohesion - get the mean position of all boids in visual range
-            if (neighboringBoids > 0) {
-                avg_xpos = avg_xpos / neighboringBoids;
-                avg_ypos = avg_ypos / neighboringBoids;
-            }
             b.vx += (avg_xpos - b.px) * cohesionFactor;
             b.vy += (avg_ypos - b.py) * cohesionFactor;
 
