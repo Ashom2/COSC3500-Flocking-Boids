@@ -108,6 +108,39 @@ float cosAngle(float x1, float y1, float x2, float y2) {
     return dot / mag1 / mag2;
 }
 
+
+/*
+Gets the orthogonal vector using pass-by-reference
+*/
+void getOrthogonal(float &orthogonalVector_x, float &orthogonalVector_y, 
+        float diffVector_x, float diffVector_y, 
+        float formationDir_x, float formationDir_y) {
+    //TODO expand and simplify    
+    // Determines whether formation is to the left or right of boid using cross product
+    // And constructs formation vector accordingly by rotating formationDir
+    float formationVector_x, formationVector_y;
+    float c = cos(formationAngle);
+    float s = sin(formationAngle);
+    if (formationDir_x * diffVector_y - formationDir_y * diffVector_x > 0) { //If boid is to the left of formation
+        formationVector_x = formationDir_x * c - formationDir_y * s;
+        formationVector_y = formationDir_x * s - formationDir_y * c;
+    }
+    else { //If boid is to the right of formation
+        formationVector_x = formationDir_x * c + formationDir_y * s;
+        formationVector_y = formationDir_y * c - formationDir_x * s;
+    }
+
+    // Check that formation is ahead of boid not behind (the dot product is more than 90 degrees)
+    // This is to stop the leaders from trying to fall in line behind
+    if (cosAngle(formationDir_x, formationDir_y, diffVector_x, diffVector_y) < 0) {
+        // Get at the vector orthogonal to the formationVector and move in that direction
+        float sqrM = sqrMag(formationVector_x, formationVector_y); //can switch with sqrmag of formationdir
+        float val = dot(diffVector_x, diffVector_y, formationVector_x, formationVector_y) / sqrM;
+        orthogonalVector_x = val * formationVector_x - diffVector_x;
+        orthogonalVector_y = val * formationVector_y - diffVector_y;
+    }
+}
+
 /*
 Main.
 */
@@ -189,37 +222,17 @@ int main() {
                 b.vy += (formationDir_y - b.vy) * matchingFactor;
 
                 // Flocking
-                //TODO expand and simplify
-                float c = cos(formationAngle);
-                float s = sin(formationAngle);
                 // Represents a vector pointed dowards this boid from the centre of mass
                 float diffVector_x = b.px - formationPos_x;
                 float diffVector_y = b.py - formationPos_y;
 
-                // Determines whether formation is to the left or right of boid using cross product
-                // And constructs formation vector accordingly by rotating formationDir
-                float formationVector_x, formationVector_y;
-                if (formationDir_x * diffVector_y - formationDir_y * diffVector_x > 0) { //If boid is to the left of formation
-                    formationVector_x = formationDir_x * c - formationDir_y * s;
-                    formationVector_y = formationDir_x * s - formationDir_y * c;
-                }
-                else { //If boid is to the right of formation
-                    formationVector_x = formationDir_x * c + formationDir_y * s;
-                    formationVector_y = formationDir_y * c - formationDir_x * s;
-                }
+                float orthogonalVector_x = 0, orthogonalVector_y = 0;
+                getOrthogonal(orthogonalVector_x, orthogonalVector_y, 
+                        diffVector_x, diffVector_y,
+                        formationDir_x, formationDir_y);
 
-                // Check that formation is ahead of boid not behind (the dot product is more than 90 degrees)
-                // This is to stop the leaders from trying to fall in line behind
-                if (cosAngle(formationDir_x, formationDir_y, diffVector_x, diffVector_y) < 0) {
-                    // Get at the vector orthogonal to the formationVector and move in that direction
-                    float sqrM = sqrMag(formationVector_x, formationVector_y); //can switch with sqrmag of formationdir
-                    float val = dot(diffVector_x, diffVector_y, formationVector_x, formationVector_y) / sqrM;
-                    float orthogonalVector_x = val * formationVector_x - diffVector_x;
-                    float orthogonalVector_y = val * formationVector_y - diffVector_y;
-
-                    b.vx += orthogonalVector_x * cohesionFactor;
-                    b.vy += orthogonalVector_y * cohesionFactor;
-                }              
+                b.vx += orthogonalVector_x * cohesionFactor;
+                b.vy += orthogonalVector_y * cohesionFactor;            
             }
 
 
