@@ -21,13 +21,13 @@ const float turnFactor = 0.2;
 // The distance within which separation occurs
 const float avoidRange = 8;
 // The rate at which separation occurs
-const float avoidFactor = 0.05;
+const float avoidFactor = 0.15;
 // The distance within which alignment occurs
 const float visualRange = 20;
 // The rate at which alignment occurs
 const float matchingFactor = 0.05;
 // The rate at which cohesion occurs
-const float cohesionFactor = 0.08;
+const float cohesionFactor = 0.2;
 // The minimum speed of the boids
 const float minSpeed = 1;
 // The maximum speed of the boids
@@ -164,7 +164,6 @@ void updateBoidCell(Boid& b, Cell cellsArr[numCells_x][numCells_y], int cell_x, 
             if (y < 0 || y >= numCells_y) continue; //Ignore cells beyond boundary
 
             // Iterate over boids in nieghboring cell
-            // for (auto iter = cellsArr[x][y].boids.begin(); iter!=cellsArr[x][y].boids.end(); iter++) {
             for (auto const& i : cellsArr[x][y].boids) {
                 Boid& o = *i;
 
@@ -284,20 +283,18 @@ int getCell_y(float y) {
 
 void updateCell(Cell cellsArr[numCells_x][numCells_y], int x, int y) {
     // For each boid in the cell
-    // for (auto const& i : cellsArr[x][y].boids) {
-    //     Boid& b = *i;
     for (auto it = cellsArr[x][y].boids.begin(); it!=cellsArr[x][y].boids.end(); it++) {
         Boid& b = **it; 
 
         updateBoidCell(b, cellsArr, x, y);
 
         // Update boid in cell
-        // int nx = getCell_x(b.px);
-        // int ny = getCell_y(b.py);
-        // if (nx != x || ny != y) {
-        //     cellsArr[nx][ny].boids.push_back(&b);
-        //     it = cellsArr[x][y].boids.erase(it);
-        // }
+        int nx = getCell_x(b.px);
+        int ny = getCell_y(b.py);
+        if (nx != x || ny != y) {
+            cellsArr[nx][ny].boids.push_back(&b);
+            it = cellsArr[x][y].boids.erase(it);
+        }
     }
 }
 
@@ -336,18 +333,12 @@ int main() {
 
     // Update boids
     for (int frame=1; frame<300; frame++) {
-        // M1: for each cell. could potentially be faster if we fed a lookup table to the functions
-        // for(int x=0; x<numCells_x; x++) {
-        //     for(int y=0; y<numCells_y; y++) {
-        //         updateCell(cellsArr, x, y);
-        //     }
-        // }
-
-        // M2: for each boid
-        for(int i=0; i<numParticles; i++) {
-            Boid& b = arr[i];
-
-            updateBoidCell(b, cellsArr, getCell_x(b.px), getCell_y(b.py));
+        // For each cell update each boid inside
+        // TODO could potentially be faster if we fed a lookup table to the functions
+        for(int x=0; x<numCells_x; x++) {
+            for(int y=0; y<numCells_y; y++) {
+                updateCell(cellsArr, x, y);
+            }
         }
         
         save(fptr, arr, numParticles, frame);
