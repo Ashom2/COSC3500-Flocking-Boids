@@ -117,17 +117,6 @@ float dot(float x1, float y1, float x2, float y2) {
     return x1 * x2 + y1 * y2;
 }
 
-// /*
-// Gets the cosine of the angle between vectors
-// */
-// float cosAngle(float x1, float y1, float x2, float y2) {
-//     float d = dot(x1, y1, x2, y2);
-//     float mag1 = mag(x1, y1);
-//     float mag2 = mag(x2, y2);
-//     return d / mag1 / mag2;
-// }
-
-
 /*
 Gets the orthogonal vector using pass-by-reference
 */
@@ -161,37 +150,40 @@ void getOrthogonal(float &orthogonalVector_x, float &orthogonalVector_y,
 }
 
 /*
-Updates a single boid
+Updates a single boid in a cell
 */
-void updateBoid (Boid& b, Boid arr[]) {
-    //Boid& b = arr[index];
-
-    // Update boid position
-    b.px += b.vx;
-    b.py += b.vy;
-
+void updateBoidCell(Boid& b, Cell cellsArr[numCells_x][numCells_y], int cell_x, int cell_y) {
     float avoidVector_x = 0, avoidVector_y = 0;
     float formationDir_x = 0, formationDir_y = 0;
     float formationPos_x = 0, formationPos_y = 0;
-    int neighboringBoids = 0;    // Loop through every other boid
-    for(int j=0; j<numParticles; j++) {        
-        Boid& o = arr[j];
+    int neighboringBoids = 0;    
+    // Iterate over neighboring cells
+    for(int x = cell_x - 1; x <= cell_x + 1; x++) {
+        if (x < 0 || x >= numCells_x) continue; //Ignore cells beyond boundary
+        for(int y = cell_y - 1; y <= cell_y + 1; y++) {
+            if (y < 0 || y >= numCells_y) continue; //Ignore cells beyond boundary
 
-        if (&b == &o) continue; //Ignore itself
+            // Iterate over boids in nieghboring cell
+            for (auto iter = cellsArr[x][y].boids.begin(); iter!=cellsArr[x][y].boids.end(); iter++) {
+                Boid& o = **iter;
+
+                if (&b == &o) continue; //Ignore itself
         
-        // Get the distance between this boid and other boid
-        float sqrDist = sqrMag(b.px - o.px, b.py - o.py);
-        if (sqrDist < sqrAvoidRange) { // If the distance is less than protected range
-            //Divide by the square of distance to make avoidance exponential and smoother
-            avoidVector_x += (b.px - o.px) / sqrDist;
-            avoidVector_y += (b.py - o.py) / sqrDist;
-        }
-        if (sqrDist < sqrVisualRange) { // If the distance is less than visual range
-            formationDir_x += o.vx;
-            formationDir_y += o.vy;
-            formationPos_x += o.px;
-            formationPos_y += o.py;
-            neighboringBoids++;
+                // Get the distance between this boid and other boid
+                float sqrDist = sqrMag(b.px - o.px, b.py - o.py);
+                if (sqrDist < sqrAvoidRange) { // If the distance is less than protected range
+                    //Divide by the square of distance to make avoidance exponential and smoother
+                    avoidVector_x += (b.px - o.px) / sqrDist;
+                    avoidVector_y += (b.py - o.py) / sqrDist;
+                }
+                if (sqrDist < sqrVisualRange) { // If the distance is less than visual range
+                    formationDir_x += o.vx;
+                    formationDir_y += o.vy;
+                    formationPos_x += o.px;
+                    formationPos_y += o.py;
+                    neighboringBoids++;
+                }
+            }
         }
     }
 
@@ -258,32 +250,51 @@ void updateBoid (Boid& b, Boid arr[]) {
         b.vy *= minSpeed / speed;
     }
     //---------------------------------------
+
+    
+    
+    // Update boid position
+    b.px += b.vx;
+    b.py += b.vy;
+    //---------------------------------------
+}
+
+/*
+Retrieves the x index of a cell at position x
+*/
+int getCell_x(float x) {
+    int nx = (int)(x / cellSize);
+    if (nx > numCells_x - 1) return numCells_x - 1;
+    if (nx < 0) return 0;
+    return nx;
+}
+
+/*
+Retrieves the y index of a cell at position y
+*/
+int getCell_y(float y) {
+    int ny = (int)(y / cellSize);
+    if (ny > numCells_y - 1) return numCells_y - 1;
+    if (ny < 0) return 0;
+    return ny;
 }
 
 void updateCell(Cell cellsArr[numCells_x][numCells_y], int x, int y) {
     // For each boid in the cell
-    for (auto it = cellsArr[x][y].boids.begin(); it!=cellsArr[x][y].boids.end(); ++it) {
+    for (auto it = cellsArr[x][y].boids.begin(); it!=cellsArr[x][y].boids.end(); it++) {
         Boid& b = **it; 
 
-        if (b.px < 450) b.px += 1;
+        updateBoidCell(b, cellsArr, x, y);
 
-        //Check neighboring cells
-        for(int x=-1; x<numCells_x; x++) {
-            if (x < 0 || x >= numCells_x)
-            for(int y=0; y<numCells_y; y++) {
-
-            }
+        // Update boid in cell
+        int nx = getCell_x(b.px);
+        int ny = getCell_y(b.py);
+        if (nx != x || ny != y) {
+            cellsArr[nx][ny].boids.push_back(&b);
+            it = cellsArr[x][y].boids.erase(it);
         }
-
-        
-        //updateBoid(b, -1, arr);
     }
 }
-
-// TODO there is a problem with this function
-// Cell getCell(Cell **cellsArr, float x, float y) {
-//     return cellsArr[(int)(x / cellSize)][(int)(y / cellSize)];
-// }
 
 /*
 Main.
@@ -311,7 +322,7 @@ int main() {
         arr[i] = Boid(px, py, vx, vy);
 
         //Add pointer to boid to cell
-        cellsArr[(int)(px / cellSize)][(int)(py / cellSize)].boids.push_back(&arr[i]);
+        cellsArr[getCell_x(px)][getCell_y(py)].boids.push_back(&arr[i]);
     }
 
     save(fptr, arr, numParticles, 0);
@@ -320,15 +331,25 @@ int main() {
 
     // Update boids
     for (int frame=1; frame<300; frame++) {
+        // M1: for each cell. could potentially be faster if we fed a lookup table to the functions
         // for(int x=0; x<numCells_x; x++) {
         //     for(int y=0; y<numCells_y; y++) {
         //         updateCell(cellsArr, x, y);
         //     }
         // }
+
+        // M2: for each boid
         for(int i=0; i<numParticles; i++) {
             Boid& b = arr[i];
-            updateBoid(b, arr);
+
+            updateBoidCell(b, cellsArr, getCell_x(b.px), getCell_y(b.py));
         }
+        
+        // M3: old
+        // for(int i=0; i<numParticles; i++) {
+        //     Boid& b = arr[i];
+        //     updateBoid(b, arr);
+        // }
 
         save(fptr, arr, numParticles, frame);
     }
