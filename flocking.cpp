@@ -74,7 +74,7 @@ class Boid {
 };
 
 /*
-Cell class to represent a subdivision of the simulation space
+Cell class to represent a subdivision of the simulation space containing a list of pointers to boids
 */
 struct Cell {
     std::list<Boid*> boids;
@@ -164,8 +164,9 @@ void updateBoidCell(Boid& b, Cell cellsArr[numCells_x][numCells_y], int cell_x, 
             if (y < 0 || y >= numCells_y) continue; //Ignore cells beyond boundary
 
             // Iterate over boids in nieghboring cell
-            for (auto iter = cellsArr[x][y].boids.begin(); iter!=cellsArr[x][y].boids.end(); iter++) {
-                Boid& o = **iter;
+            // for (auto iter = cellsArr[x][y].boids.begin(); iter!=cellsArr[x][y].boids.end(); iter++) {
+            for (auto const& i : cellsArr[x][y].boids) {
+                Boid& o = *i;
 
                 if (&b == &o) continue; //Ignore itself
         
@@ -263,6 +264,7 @@ void updateBoidCell(Boid& b, Cell cellsArr[numCells_x][numCells_y], int cell_x, 
 Retrieves the x index of a cell at position x
 */
 int getCell_x(float x) {
+    //TODO check out std::clamp
     int nx = (int)(x / cellSize);
     if (nx > numCells_x - 1) return numCells_x - 1;
     if (nx < 0) return 0;
@@ -273,6 +275,7 @@ int getCell_x(float x) {
 Retrieves the y index of a cell at position y
 */
 int getCell_y(float y) {
+    //TODO check out std::clamp
     int ny = (int)(y / cellSize);
     if (ny > numCells_y - 1) return numCells_y - 1;
     if (ny < 0) return 0;
@@ -281,18 +284,20 @@ int getCell_y(float y) {
 
 void updateCell(Cell cellsArr[numCells_x][numCells_y], int x, int y) {
     // For each boid in the cell
+    // for (auto const& i : cellsArr[x][y].boids) {
+    //     Boid& b = *i;
     for (auto it = cellsArr[x][y].boids.begin(); it!=cellsArr[x][y].boids.end(); it++) {
         Boid& b = **it; 
 
         updateBoidCell(b, cellsArr, x, y);
 
         // Update boid in cell
-        int nx = getCell_x(b.px);
-        int ny = getCell_y(b.py);
-        if (nx != x || ny != y) {
-            cellsArr[nx][ny].boids.push_back(&b);
-            it = cellsArr[x][y].boids.erase(it);
-        }
+        // int nx = getCell_x(b.px);
+        // int ny = getCell_y(b.py);
+        // if (nx != x || ny != y) {
+        //     cellsArr[nx][ny].boids.push_back(&b);
+        //     it = cellsArr[x][y].boids.erase(it);
+        // }
     }
 }
 
@@ -345,18 +350,14 @@ int main() {
             updateBoidCell(b, cellsArr, getCell_x(b.px), getCell_y(b.py));
         }
         
-        // M3: old
-        // for(int i=0; i<numParticles; i++) {
-        //     Boid& b = arr[i];
-        //     updateBoid(b, arr);
-        // }
-
         save(fptr, arr, numParticles, frame);
     }
+
 
     
     // Close the file
     fclose(fptr);
+
 
 
     return 0;
