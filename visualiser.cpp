@@ -1,4 +1,5 @@
 #include <iostream>
+#include <SFML/Graphics.hpp>
 
 /*
 Vector2D class for storing two-dimensional spacial vectors.
@@ -26,10 +27,11 @@ int main() {
     const char *filepath = "data.txt";
     const size_t arrLength = 20;
 
+    Vector2D readArray[arrLength];
+
     FILE *fptr;
     // Read vector array from file
     size_t elementSize = sizeof(Vector2D);
-    Vector2D readArray[arrLength];
     // Open the file for reading
     fptr = fopen(filepath, "r");
     if (fptr == NULL) {
@@ -45,4 +47,26 @@ int main() {
     
     // Close the file
     fclose(fptr);
+
+
+    sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
+    // sf::RenderWindow window(
+    //     sf::VideoMode(640, 480),
+    //     "Hello World");
+    // sf::CircleShape shape(200);
+ 
+    // while (window.isOpen()) 
+    // {
+    //     sf::Event event;
+    //     while (
+    //         window.pollEvent(event))
+    //         if (event.type ==
+    //         sf::Event::Closed)
+    //             window.close();
+ 
+    //     window.clear();
+    //     window.draw(shape);
+    //     window.display();
+    // }
+    return 0;
 }

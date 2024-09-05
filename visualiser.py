@@ -11,6 +11,7 @@ showDir = False
 xSize = 512
 ySize = 512
 markerSize = 1
+saveFile = "CellsTest7.gif"
 
 
 
@@ -123,6 +124,6 @@ with open("data.txt", "r") as file1:
         return scat
 
     anim = animation.FuncAnimation(fig=fig, func=update, frames=frameCount, interval=40)
-    anim.save('test.gif', writer='pillow', fps=30) 
-    
-    #plt.show()
+    anim.save(saveFile, writer='pillow', fps=30) 
+
+    plt.show()
