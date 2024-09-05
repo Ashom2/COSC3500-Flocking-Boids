@@ -152,14 +152,13 @@ void updateBoid (int index, Boid arr[]) {
     Boid& b = arr[index];
 
     // Update boid position
-    b.px = b.px + b.vx;
-    b.py = b.py + b.vy;
+    b.px += b.vx;
+    b.py += b.vy;
 
     float avoidVector_x = 0, avoidVector_y = 0;
     float formationDir_x = 0, formationDir_y = 0;
     float formationPos_x = 0, formationPos_y = 0;
-    int neighboringBoids = 0;
-    // Loop through every other boid
+    int neighboringBoids = 0;    // Loop through every other boid
     for(int j=0; j<numParticles; j++) {
         if (index == j) continue; //Ignore itself
         
@@ -187,10 +186,10 @@ void updateBoid (int index, Boid arr[]) {
 
     if (neighboringBoids > 0) { //If there were any boids in visual range
         // Get mean formation direction and position
-        formationDir_x = formationDir_x / neighboringBoids;
-        formationDir_y = formationDir_y / neighboringBoids;
-        formationPos_x = formationPos_x / neighboringBoids;
-        formationPos_y = formationPos_y / neighboringBoids;  
+        formationDir_x /= neighboringBoids;
+        formationDir_y /= neighboringBoids;
+        formationPos_x /= neighboringBoids;
+        formationPos_y /= neighboringBoids;  
 
         // Alignment - match the mean velocity of all boids in visual range
         b.vx += (formationDir_x - b.vx) * matchingFactor;
@@ -230,17 +229,18 @@ void updateBoid (int index, Boid arr[]) {
 
 
     // Impose speed limit on boid
+    //TODO use *= and precalculate maxSpeed / speed
     float speed = mag(b.vx, b.vy);
     if (speed > maxSpeed) {
-        b.vx = (b.vx / speed) * maxSpeed;
-        b.vy = (b.vy / speed) * maxSpeed;
+        b.vx *= maxSpeed / speed;
+        b.vy *= maxSpeed / speed;
     }
     else if (speed == 0) {
         // TODO
     }
     else if (speed < minSpeed) {
-        b.vx = (b.vx / speed) * minSpeed;
-        b.vy = (b.vy / speed) * minSpeed;
+        b.vx = minSpeed / speed;
+        b.vy = minSpeed / speed;
     }
     //---------------------------------------
 }
