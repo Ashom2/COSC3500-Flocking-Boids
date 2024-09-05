@@ -34,6 +34,10 @@ const float maxSpeed = 2;
 // The formation angle
 const float formationAngle = 0.7 * PI;
 
+// Precalculated constants
+const float sqrAvoidRange = avoidRange * avoidRange;
+const float sqrVisualRange = visualRange * visualRange;
+
 
 
 /*
@@ -98,15 +102,15 @@ float dot(float x1, float y1, float x2, float y2) {
     return x1 * x2 + y1 * y2;
 }
 
-/*
-Gets the cosine of the angle between vectors
-*/
-float cosAngle(float x1, float y1, float x2, float y2) {
-    float dot = x1 * x2 + y1 * y2;
-    float mag1 = mag(x1, y1);
-    float mag2 = mag(x2, y2);
-    return dot / mag1 / mag2;
-}
+// /*
+// Gets the cosine of the angle between vectors
+// */
+// float cosAngle(float x1, float y1, float x2, float y2) {
+//     float d = dot(x1, y1, x2, y2);
+//     float mag1 = mag(x1, y1);
+//     float mag2 = mag(x2, y2);
+//     return d / mag1 / mag2;
+// }
 
 
 /*
@@ -132,10 +136,10 @@ void getOrthogonal(float &orthogonalVector_x, float &orthogonalVector_y,
 
     // Check that formation is ahead of boid not behind (the dot product is more than 90 degrees)
     // This is to stop the leaders from trying to fall in line behind
-    if (cosAngle(formationDir_x, formationDir_y, diffVector_x, diffVector_y) < 0) {
+    if (dot(formationDir_x, formationDir_y, diffVector_x, diffVector_y) < 0) {
         // Get at the vector orthogonal to the formationVector and move in that direction
-        float m = mag(formationVector_x, formationVector_y);
-        float val = dot(diffVector_x, diffVector_y, formationVector_x, formationVector_y) / m / m;
+        float sqrM = sqrMag(formationVector_x, formationVector_y);
+        float val = dot(diffVector_x, diffVector_y, formationVector_x, formationVector_y) / sqrM;
         orthogonalVector_x = val * formationVector_x - diffVector_x;
         orthogonalVector_y = val * formationVector_y - diffVector_y;
     }
@@ -161,13 +165,14 @@ void updateBoid (int index, Boid arr[]) {
         
         Boid& o = arr[j];
 
-        float dist = mag(b.px - o.px, b.py - o.py);
-        if (dist < avoidRange) { // If the distance is less than protected range
+        // Get the distance between this boid and other boid
+        float sqrDist = sqrMag(b.px - o.px, b.py - o.py);
+        if (sqrDist < sqrAvoidRange) { // If the distance is less than protected range
             //Divide by the square of distance to make avoidance exponential and smoother
-            avoidVector_x += (b.px - o.px) / (dist * dist);
-            avoidVector_y += (b.py - o.py) / (dist * dist);
+            avoidVector_x += (b.px - o.px) / sqrDist;
+            avoidVector_y += (b.py - o.py) / sqrDist;
         }
-        if (dist < visualRange) { // If the distance is less than visual range
+        if (sqrDist < sqrVisualRange) { // If the distance is less than visual range
             formationDir_x += o.vx;
             formationDir_y += o.vy;
             formationPos_x += o.px;
@@ -225,7 +230,7 @@ void updateBoid (int index, Boid arr[]) {
 
 
     // Impose speed limit on boid
-    float speed = sqrt(b.vx * b.vx + b.vy * b.vy);
+    float speed = mag(b.vx, b.vy);
     if (speed > maxSpeed) {
         b.vx = (b.vx / speed) * maxSpeed;
         b.vy = (b.vy / speed) * maxSpeed;
