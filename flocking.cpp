@@ -1,5 +1,6 @@
 #include <iostream>
 #include <math.h>
+#include <list>
 
 const float PI = 3.141592653589793238462643383279502884;
 
@@ -37,6 +38,13 @@ const float formationAngle = 0.7 * PI;
 // Precalculated constants
 const float sqrAvoidRange = avoidRange * avoidRange;
 const float sqrVisualRange = visualRange * visualRange;
+// Calculate cell size
+const int cellSize = pow(2, ceil(log2(std::max(avoidRange, visualRange))));
+// I failed to implement this using constexpr so you (the user) must compute manually
+// const int numCells_x = xSize / cellSize;
+// const int numCells_y = ySize / cellSize;
+const int numCells_x = 16;
+const int numCells_y = 16;
 
 
 
@@ -63,6 +71,13 @@ class Boid {
             this->vx = vx;
             this->vy = vy;
         }
+};
+
+/*
+Cell class to represent a subdivision of the simulation space
+*/
+struct Cell {
+    std::list<Boid*> boids;
 };
 
 // Sourced from https://stackoverflow.com/questions/686353/random-float-number-generation
@@ -148,23 +163,22 @@ void getOrthogonal(float &orthogonalVector_x, float &orthogonalVector_y,
 /*
 Updates a single boid
 */
-void updateBoid (int index, Boid arr[]) {
-    Boid& b = arr[index];
+void updateBoid (Boid& b, Boid arr[]) {
+    //Boid& b = arr[index];
 
     // Update boid position
-    b.px = b.px + b.vx;
-    b.py = b.py + b.vy;
+    b.px += b.vx;
+    b.py += b.vy;
 
     float avoidVector_x = 0, avoidVector_y = 0;
     float formationDir_x = 0, formationDir_y = 0;
     float formationPos_x = 0, formationPos_y = 0;
-    int neighboringBoids = 0;
-    // Loop through every other boid
-    for(int j=0; j<numParticles; j++) {
-        if (index == j) continue; //Ignore itself
-        
+    int neighboringBoids = 0;    // Loop through every other boid
+    for(int j=0; j<numParticles; j++) {        
         Boid& o = arr[j];
 
+        if (&b == &o) continue; //Ignore itself
+        
         // Get the distance between this boid and other boid
         float sqrDist = sqrMag(b.px - o.px, b.py - o.py);
         if (sqrDist < sqrAvoidRange) { // If the distance is less than protected range
@@ -187,10 +201,10 @@ void updateBoid (int index, Boid arr[]) {
 
     if (neighboringBoids > 0) { //If there were any boids in visual range
         // Get mean formation direction and position
-        formationDir_x = formationDir_x / neighboringBoids;
-        formationDir_y = formationDir_y / neighboringBoids;
-        formationPos_x = formationPos_x / neighboringBoids;
-        formationPos_y = formationPos_y / neighboringBoids;  
+        formationDir_x /= neighboringBoids;
+        formationDir_y /= neighboringBoids;
+        formationPos_x /= neighboringBoids;
+        formationPos_y /= neighboringBoids;  
 
         // Alignment - match the mean velocity of all boids in visual range
         b.vx += (formationDir_x - b.vx) * matchingFactor;
@@ -230,20 +244,46 @@ void updateBoid (int index, Boid arr[]) {
 
 
     // Impose speed limit on boid
+    //TODO use *= and precalculate maxSpeed / speed
     float speed = mag(b.vx, b.vy);
     if (speed > maxSpeed) {
-        b.vx = (b.vx / speed) * maxSpeed;
-        b.vy = (b.vy / speed) * maxSpeed;
+        b.vx *= maxSpeed / speed;
+        b.vy *= maxSpeed / speed;
     }
     else if (speed == 0) {
         // TODO
     }
     else if (speed < minSpeed) {
-        b.vx = (b.vx / speed) * minSpeed;
-        b.vy = (b.vy / speed) * minSpeed;
+        b.vx *= minSpeed / speed;
+        b.vy *= minSpeed / speed;
     }
     //---------------------------------------
 }
+
+void updateCell(Cell cellsArr[numCells_x][numCells_y], int x, int y) {
+    // For each boid in the cell
+    for (auto it = cellsArr[x][y].boids.begin(); it!=cellsArr[x][y].boids.end(); ++it) {
+        Boid& b = **it; 
+
+        if (b.px < 450) b.px += 1;
+
+        //Check neighboring cells
+        for(int x=-1; x<numCells_x; x++) {
+            if (x < 0 || x >= numCells_x)
+            for(int y=0; y<numCells_y; y++) {
+
+            }
+        }
+
+        
+        //updateBoid(b, -1, arr);
+    }
+}
+
+// TODO there is a problem with this function
+// Cell getCell(Cell **cellsArr, float x, float y) {
+//     return cellsArr[(int)(x / cellSize)][(int)(y / cellSize)];
+// }
 
 /*
 Main.
@@ -257,7 +297,7 @@ int main() {
         return 1;
     }
 
-
+    Cell cellsArr[numCells_x][numCells_y];
 
     // Initialise array of boids
     Boid arr[numParticles];
@@ -269,6 +309,9 @@ int main() {
         float vx = cos(randTheta) * minSpeed;
         float vy = sin(randTheta) * minSpeed;
         arr[i] = Boid(px, py, vx, vy);
+
+        //Add pointer to boid to cell
+        cellsArr[(int)(px / cellSize)][(int)(py / cellSize)].boids.push_back(&arr[i]);
     }
 
     save(fptr, arr, numParticles, 0);
@@ -277,8 +320,14 @@ int main() {
 
     // Update boids
     for (int frame=1; frame<300; frame++) {
+        // for(int x=0; x<numCells_x; x++) {
+        //     for(int y=0; y<numCells_y; y++) {
+        //         updateCell(cellsArr, x, y);
+        //     }
+        // }
         for(int i=0; i<numParticles; i++) {
-            updateBoid(i, arr);
+            Boid& b = arr[i];
+            updateBoid(b, arr);
         }
 
         save(fptr, arr, numParticles, frame);
