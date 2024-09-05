@@ -180,7 +180,8 @@ void updateBoid (int index, Boid arr[]) {
     b.vx += avoidVector_x * avoidFactor;
     b.vy += avoidVector_y * avoidFactor;
 
-    if (neighboringBoids > 0) {
+    if (neighboringBoids > 0) { //If there were any boids in visual range
+        // Get mean formation direction and position
         formationDir_x = formationDir_x / neighboringBoids;
         formationDir_y = formationDir_y / neighboringBoids;
         formationPos_x = formationPos_x / neighboringBoids;
