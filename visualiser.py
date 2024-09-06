@@ -11,7 +11,7 @@ showDir = False
 xSize = 512
 ySize = 512
 markerSize = 1
-saveFile = "CellsTest7.gif"
+saveFile = "output.gif"
 
 
 
@@ -110,7 +110,7 @@ with open("data.txt", "r") as file1:
        
         
     
-    fig, ax = plt.subplots()    
+    fig, ax = plt.subplots(figsize=(10, 10))    
     ax.axis([0, xSize, 0, ySize])
     ax.set_xticks(np.arange(0, xSize + 1, xSize / 8))
     ax.set_yticks(np.arange(0, ySize + 1, xSize / 8))
