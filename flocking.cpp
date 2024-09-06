@@ -1,6 +1,7 @@
 #include <iostream>
 #include <math.h>
 #include <list>
+#include <immintrin.h>
 
 const float PI = 3.141592653589793238462643383279502884;
 
@@ -157,7 +158,8 @@ void updateBoidCell(Boid& b, Cell cellsArr[numCells_x][numCells_y], int cell_x, 
     float formationDir_x = 0, formationDir_y = 0;
     float formationPos_x = 0, formationPos_y = 0;
     int neighboringBoids = 0;    
-    // Iterate over neighboring cells
+
+    // // Iterate over neighboring cells
     for(int x = cell_x - 1; x <= cell_x + 1; x++) {
         if (x < 0 || x >= numCells_x) continue; //Ignore cells beyond boundary
         for(int y = cell_y - 1; y <= cell_y + 1; y++) {
@@ -166,7 +168,7 @@ void updateBoidCell(Boid& b, Cell cellsArr[numCells_x][numCells_y], int cell_x, 
             // Iterate over boids in nieghboring cell
             for (auto const& i : cellsArr[x][y].boids) {
                 Boid& o = *i;
-
+                
                 if (&b == &o) continue; //Ignore itself
         
                 // Get the distance between this boid and other boid
@@ -281,19 +283,40 @@ int getCell_y(float y) {
     return ny;
 }
 
-void updateCell(Cell cellsArr[numCells_x][numCells_y], int x, int y) {
+void updateCell(Cell cellsArr[numCells_x][numCells_y], int cx, int cy) {
+    //TODO I was working on an optimisation to save all neighboring cell's boids to an array to be reused for the whole cell
+    // printf("updating cell\n");
+    // Construct array of all boids in neighboring cells
+    // Boid** neighboringBoids = (Boid**)malloc(1 * sizeof(Boid*));
+    // int index = 0;
+    // // Iterate over neighboring cells
+    // for(int x = cx - 1; x <= cx + 1; x++) {
+    //     if (x < 0 || x >= numCells_x) continue; //Ignore cells beyond boundary
+    //     for(int y = cy - 1; y <= cy + 1; y++) {
+    //         if (y < 0 || y >= numCells_y) continue; //Ignore cells beyond boundary
+
+    //         neighboringBoids = (Boid**)realloc(neighboringBoids, (1 + index + cellsArr[x][y].boids.size()) * sizeof(Boid*));
+    //         // Iterate over boids in nieghboring cell
+    //         for (auto const& i : cellsArr[x][y].boids) {
+    //             Boid& o = *i;
+    //             neighboringBoids[index++] = &o;
+    //         }
+    //     }
+    // }
+    // printf("%d\n", index);
+
     // For each boid in the cell
-    for (auto it = cellsArr[x][y].boids.begin(); it!=cellsArr[x][y].boids.end(); it++) {
+    for (auto it = cellsArr[cx][cy].boids.begin(); it!=cellsArr[cx][cy].boids.end(); it++) {
         Boid& b = **it; 
 
-        updateBoidCell(b, cellsArr, x, y);
+        updateBoidCell(b, cellsArr, cx, cy);
 
         // Update boid in cell
         int nx = getCell_x(b.px);
         int ny = getCell_y(b.py);
-        if (nx != x || ny != y) {
+        if (nx != cx || ny != cy) {
             cellsArr[nx][ny].boids.push_back(&b);
-            it = cellsArr[x][y].boids.erase(it);
+            it = cellsArr[cx][cy].boids.erase(it);
         }
     }
 }
