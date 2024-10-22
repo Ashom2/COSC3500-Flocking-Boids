@@ -11,7 +11,7 @@ showDir = False
 xSize = 512
 ySize = 512
 markerSize = 1
-saveFile = "output.gif"
+saveFile = "Visualisations/output.gif"
 
 
 

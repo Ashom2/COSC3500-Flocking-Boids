@@ -1,0 +1,551 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  us/call  us/call  name    
+ 31.71      0.13     0.13   303547     0.43     1.24  updateBoidCell(Boid&, Cell (*) [16], int, int)
+  9.76      0.17     0.04 27586662     0.00     0.00  std::__cxx11::list<Boid*, std::allocator<Boid*> >::end()
+  9.76      0.21     0.04 24359021     0.00     0.00  sqrMag(float, float)
+  8.54      0.24     0.04 24794213     0.00     0.00  std::_List_iterator<Boid*>::operator*() const
+  8.54      0.28     0.04 24794213     0.00     0.00  std::_List_iterator<Boid*>::operator++(int)
+  6.10      0.30     0.03 24840835     0.00     0.00  __gnu_cxx::__aligned_membuf<Boid*>::_M_ptr()
+  4.88      0.33     0.02 30400422     0.00     0.00  std::_List_iterator<Boid*>::_List_iterator(std::__detail::_List_node_base*)
+  4.88      0.34     0.02  2769138     0.01     0.01  std::__cxx11::list<Boid*, std::allocator<Boid*> >::begin()
+  3.66      0.36     0.01      256    58.59    58.60  std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::~_List_base()
+  2.44      0.37     0.01 27563351     0.00     0.00  std::operator!=(std::_List_iterator<Boid*> const&, std::_List_iterator<Boid*> const&)
+  2.44      0.38     0.01 24840835     0.00     0.00  std::_List_node<Boid*>::_M_valptr()
+  2.44      0.39     0.01   302095     0.03     0.03  getOrthogonal(float&, float&, float, float, float, float)
+  1.22      0.40     0.01 24840835     0.00     0.00  __gnu_cxx::__aligned_membuf<Boid*>::_M_addr()
+  1.22      0.40     0.01    93244     0.05     0.05  Boid*&& std::forward<Boid*>(std::remove_reference<Boid*>::type&)
+  1.22      0.41     0.01    23311     0.21     0.21  std::remove_reference<Boid*&>::type&& std::move<Boid*&>(Boid*&)
+  1.22      0.41     0.01      256    19.53    19.53  __gnu_cxx::new_allocator<std::_List_node<Boid*> >::new_allocator()
+  0.00      0.41     0.00   473997     0.00     0.00  dot(float, float, float, float)
+  0.00      0.41     0.00   304547     0.00     0.00  getCell_x(float)
+  0.00      0.41     0.00   304547     0.00     0.00  getCell_y(float)
+  0.00      0.41     0.00   303547     0.00     0.00  mag(float, float)
+  0.00      0.41     0.00   303547     0.00     0.00  std::sqrt(float)
+  0.00      0.41     0.00   303095     0.00     0.00  std::cos(float)
+  0.00      0.41     0.00   303095     0.00     0.00  std::sin(float)
+  0.00      0.41     0.00    76544     0.00     5.09  updateCell(Cell (*) [16], int, int)
+  0.00      0.41     0.00    46622     0.00     0.00  std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_get_Node_allocator()
+  0.00      0.41     0.00    23311     0.00     0.00  __gnu_cxx::new_allocator<std::_List_node<Boid*> >::deallocate(std::_List_node<Boid*>*, unsigned long)
+  0.00      0.41     0.00    23311     0.00     0.00  void __gnu_cxx::new_allocator<std::_List_node<Boid*> >::destroy<Boid*>(Boid**)
+  0.00      0.41     0.00    23311     0.00     0.00  __gnu_cxx::new_allocator<std::_List_node<Boid*> >::allocate(unsigned long, void const*)
+  0.00      0.41     0.00    23311     0.00     0.05  void __gnu_cxx::new_allocator<std::_List_node<Boid*> >::construct<Boid*, Boid*>(Boid**, Boid*&&)
+  0.00      0.41     0.00    23311     0.00     0.00  __gnu_cxx::new_allocator<std::_List_node<Boid*> >::_M_max_size() const
+  0.00      0.41     0.00    23311     0.00     0.00  std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::__allocated_ptr(std::allocator<std::_List_node<Boid*> >&, std::_List_node<Boid*>*)
+  0.00      0.41     0.00    23311     0.00     0.00  std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::~__allocated_ptr()
+  0.00      0.41     0.00    23311     0.00     0.00  std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::operator=(decltype(nullptr))
+  0.00      0.41     0.00    23311     0.00     0.00  std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::deallocate(std::allocator<std::_List_node<Boid*> >&, std::_List_node<Boid*>*, unsigned long)
+  0.00      0.41     0.00    23311     0.00     0.00  void std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::destroy<Boid*>(std::allocator<std::_List_node<Boid*> >&, Boid**)
+  0.00      0.41     0.00    23311     0.00     0.00  std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::allocate(std::allocator<std::_List_node<Boid*> >&, unsigned long)
+  0.00      0.41     0.00    23311     0.00     0.11  void std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::construct<Boid*, Boid*>(std::allocator<std::_List_node<Boid*> >&, Boid**, Boid*&&)
+  0.00      0.41     0.00    23311     0.00     0.00  std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_get_node()
+  0.00      0.41     0.00    23311     0.00     0.00  std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_inc_size(unsigned long)
+  0.00      0.41     0.00    23311     0.00     0.00  std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_put_node(std::_List_node<Boid*>*)
+  0.00      0.41     0.00    23311     0.00     0.16  std::_List_node<Boid*>* std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_create_node<Boid*>(Boid*&&)
+  0.00      0.41     0.00    23311     0.00     0.22  void std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_insert<Boid*>(std::_List_iterator<Boid*>, Boid*&&)
+  0.00      0.41     0.00    23311     0.00     0.43  std::__cxx11::list<Boid*, std::allocator<Boid*> >::push_back(Boid*&&)
+  0.00      0.41     0.00    23311     0.00     0.00  std::allocator<std::_List_node<Boid*> >* std::__addressof<std::allocator<std::_List_node<Boid*> > >(std::allocator<std::_List_node<Boid*> >&)
+  0.00      0.41     0.00    23311     0.00     0.00  operator new(unsigned long, void*)
+  0.00      0.41     0.00    22311     0.00     0.00  std::_List_const_iterator<Boid*>::_M_const_cast() const
+  0.00      0.41     0.00    22311     0.00     0.00  std::_List_const_iterator<Boid*>::_List_const_iterator(std::_List_iterator<Boid*> const&)
+  0.00      0.41     0.00    22311     0.00     0.00  std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_dec_size(unsigned long)
+  0.00      0.41     0.00    22311     0.00     0.00  std::__cxx11::list<Boid*, std::allocator<Boid*> >::erase(std::_List_const_iterator<Boid*>)
+  0.00      0.41     0.00    22311     0.00     0.00  std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_erase(std::_List_iterator<Boid*>)
+  0.00      0.41     0.00     3000     0.00     0.00  randFloat(float, float)
+  0.00      0.41     0.00     1000     0.00     0.00  Boid::Boid()
+  0.00      0.41     0.00     1000     0.00     0.00  Boid::Boid(float, float, float, float)
+  0.00      0.41     0.00      300     0.00     0.00  save(_IO_FILE*, Boid*, int, int)
+  0.00      0.41     0.00      256     0.00    19.53  Cell::Cell()
+  0.00      0.41     0.00      256     0.00    58.60  Cell::~Cell()
+  0.00      0.41     0.00      256     0.00     0.00  __gnu_cxx::new_allocator<std::_List_node<Boid*> >::~new_allocator()
+  0.00      0.41     0.00      256     0.00    19.53  std::allocator<std::_List_node<Boid*> >::allocator()
+  0.00      0.41     0.00      256     0.00     0.00  std::allocator<std::_List_node<Boid*> >::~allocator()
+  0.00      0.41     0.00      256     0.00    19.53  std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_impl::_List_impl()
+  0.00      0.41     0.00      256     0.00     0.00  std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_impl::~_List_impl()
+  0.00      0.41     0.00      256     0.00     0.01  std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_clear()
+  0.00      0.41     0.00      256     0.00    19.53  std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_base()
+  0.00      0.41     0.00      256     0.00    19.53  std::__cxx11::list<Boid*, std::allocator<Boid*> >::list()
+  0.00      0.41     0.00      256     0.00    58.60  std::__cxx11::list<Boid*, std::allocator<Boid*> >::~list()
+  0.00      0.41     0.00      256     0.00     0.00  std::__detail::_List_node_header::_M_init()
+  0.00      0.41     0.00      256     0.00     0.00  std::__detail::_List_node_header::_List_node_header()
+  0.00      0.41     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 2.44% of 0.41 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]    100.0    0.00    0.41                 main [1]
+                0.00    0.39   76544/76544       updateCell(Cell (*) [16], int, int) [2]
+                0.00    0.02     256/256         Cell::~Cell() [12]
+                0.00    0.01     256/256         Cell::Cell() [22]
+                0.00    0.00    1000/23311       std::__cxx11::list<Boid*, std::allocator<Boid*> >::push_back(Boid*&&) [16]
+                0.00    0.00    3000/3000        randFloat(float, float) [66]
+                0.00    0.00    1000/1000        Boid::Boid() [67]
+                0.00    0.00    1000/303095      std::cos(float) [46]
+                0.00    0.00    1000/303095      std::sin(float) [47]
+                0.00    0.00    1000/1000        Boid::Boid(float, float, float, float) [68]
+                0.00    0.00    1000/304547      getCell_x(float) [42]
+                0.00    0.00    1000/304547      getCell_y(float) [43]
+                0.00    0.00     300/300         save(_IO_FILE*, Boid*, int, int) [69]
+-----------------------------------------------
+                0.00    0.39   76544/76544       main [1]
+[2]     95.0    0.00    0.39   76544         updateCell(Cell (*) [16], int, int) [2]
+                0.13    0.25  303547/303547      updateBoidCell(Boid&, Cell (*) [16], int, int) [3]
+                0.00    0.01   22311/23311       std::__cxx11::list<Boid*, std::allocator<Boid*> >::push_back(Boid*&&) [16]
+                0.00    0.00  303547/24794213     std::_List_iterator<Boid*>::operator*() const [4]
+                0.00    0.00  380091/27586662     std::__cxx11::list<Boid*, std::allocator<Boid*> >::end() [5]
+                0.00    0.00   76544/2769138     std::__cxx11::list<Boid*, std::allocator<Boid*> >::begin() [10]
+                0.00    0.00  303547/24794213     std::_List_iterator<Boid*>::operator++(int) [8]
+                0.00    0.00  380091/27563351     std::operator!=(std::_List_iterator<Boid*> const&, std::_List_iterator<Boid*> const&) [17]
+                0.00    0.00   22311/22311       std::__cxx11::list<Boid*, std::allocator<Boid*> >::erase(std::_List_const_iterator<Boid*>) [31]
+                0.00    0.00  303547/304547      getCell_x(float) [42]
+                0.00    0.00  303547/304547      getCell_y(float) [43]
+                0.00    0.00   22311/22311       std::_List_const_iterator<Boid*>::_List_const_iterator(std::_List_iterator<Boid*> const&) [64]
+-----------------------------------------------
+                0.13    0.25  303547/303547      updateCell(Cell (*) [16], int, int) [2]
+[3]     91.9    0.13    0.25  303547         updateBoidCell(Boid&, Cell (*) [16], int, int) [3]
+                0.03    0.04 24490666/24794213     std::_List_iterator<Boid*>::operator*() const [4]
+                0.04    0.02 27183260/27586662     std::__cxx11::list<Boid*, std::allocator<Boid*> >::end() [5]
+                0.04    0.00 24187119/24359021     sqrMag(float, float) [7]
+                0.03    0.00 24490666/24794213     std::_List_iterator<Boid*>::operator++(int) [8]
+                0.02    0.00 2692594/2769138     std::__cxx11::list<Boid*, std::allocator<Boid*> >::begin() [10]
+                0.01    0.00  302095/302095      getOrthogonal(float&, float&, float, float, float, float) [15]
+                0.01    0.00 27183260/27563351     std::operator!=(std::_List_iterator<Boid*> const&, std::_List_iterator<Boid*> const&) [17]
+                0.00    0.00  303547/303547      mag(float, float) [44]
+-----------------------------------------------
+                0.00    0.00  303547/24794213     updateCell(Cell (*) [16], int, int) [2]
+                0.03    0.04 24490666/24794213     updateBoidCell(Boid&, Cell (*) [16], int, int) [3]
+[4]     18.3    0.04    0.04 24794213         std::_List_iterator<Boid*>::operator*() const [4]
+                0.01    0.03 24794213/24840835     std::_List_node<Boid*>::_M_valptr() [6]
+-----------------------------------------------
+                0.00    0.00   23311/27586662     std::__cxx11::list<Boid*, std::allocator<Boid*> >::push_back(Boid*&&) [16]
+                0.00    0.00  380091/27586662     updateCell(Cell (*) [16], int, int) [2]
+                0.04    0.02 27183260/27586662     updateBoidCell(Boid&, Cell (*) [16], int, int) [3]
+[5]     14.2    0.04    0.02 27586662         std::__cxx11::list<Boid*, std::allocator<Boid*> >::end() [5]
+                0.02    0.00 27586662/30400422     std::_List_iterator<Boid*>::_List_iterator(std::__detail::_List_node_base*) [11]
+-----------------------------------------------
+                0.00    0.00    1000/24840835     std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_clear() [34]
+                0.00    0.00   22311/24840835     std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_erase(std::_List_iterator<Boid*>) [32]
+                0.00    0.00   23311/24840835     std::_List_node<Boid*>* std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_create_node<Boid*>(Boid*&&) [28]
+                0.01    0.03 24794213/24840835     std::_List_iterator<Boid*>::operator*() const [4]
+[6]      9.8    0.01    0.03 24840835         std::_List_node<Boid*>::_M_valptr() [6]
+                0.03    0.01 24840835/24840835     __gnu_cxx::__aligned_membuf<Boid*>::_M_ptr() [9]
+-----------------------------------------------
+                0.00    0.00  171902/24359021     getOrthogonal(float&, float&, float, float, float, float) [15]
+                0.04    0.00 24187119/24359021     updateBoidCell(Boid&, Cell (*) [16], int, int) [3]
+[7]      9.8    0.04    0.00 24359021         sqrMag(float, float) [7]
+-----------------------------------------------
+                0.00    0.00  303547/24794213     updateCell(Cell (*) [16], int, int) [2]
+                0.03    0.00 24490666/24794213     updateBoidCell(Boid&, Cell (*) [16], int, int) [3]
+[8]      8.5    0.04    0.00 24794213         std::_List_iterator<Boid*>::operator++(int) [8]
+-----------------------------------------------
+                0.03    0.01 24840835/24840835     std::_List_node<Boid*>::_M_valptr() [6]
+[9]      7.3    0.03    0.01 24840835         __gnu_cxx::__aligned_membuf<Boid*>::_M_ptr() [9]
+                0.01    0.00 24840835/24840835     __gnu_cxx::__aligned_membuf<Boid*>::_M_addr() [19]
+-----------------------------------------------
+                0.00    0.00   76544/2769138     updateCell(Cell (*) [16], int, int) [2]
+                0.02    0.00 2692594/2769138     updateBoidCell(Boid&, Cell (*) [16], int, int) [3]
+[10]     5.3    0.02    0.00 2769138         std::__cxx11::list<Boid*, std::allocator<Boid*> >::begin() [10]
+                0.00    0.00 2769138/30400422     std::_List_iterator<Boid*>::_List_iterator(std::__detail::_List_node_base*) [11]
+-----------------------------------------------
+                0.00    0.00   22311/30400422     std::__cxx11::list<Boid*, std::allocator<Boid*> >::erase(std::_List_const_iterator<Boid*>) [31]
+                0.00    0.00   22311/30400422     std::_List_const_iterator<Boid*>::_M_const_cast() const [33]
+                0.00    0.00 2769138/30400422     std::__cxx11::list<Boid*, std::allocator<Boid*> >::begin() [10]
+                0.02    0.00 27586662/30400422     std::__cxx11::list<Boid*, std::allocator<Boid*> >::end() [5]
+[11]     4.9    0.02    0.00 30400422         std::_List_iterator<Boid*>::_List_iterator(std::__detail::_List_node_base*) [11]
+-----------------------------------------------
+                0.00    0.02     256/256         main [1]
+[12]     3.7    0.00    0.02     256         Cell::~Cell() [12]
+                0.00    0.02     256/256         std::__cxx11::list<Boid*, std::allocator<Boid*> >::~list() [14]
+-----------------------------------------------
+                0.01    0.00     256/256         std::__cxx11::list<Boid*, std::allocator<Boid*> >::~list() [14]
+[13]     3.7    0.01    0.00     256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::~_List_base() [13]
+                0.00    0.00     256/256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_clear() [34]
+                0.00    0.00     256/256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_impl::~_List_impl() [72]
+-----------------------------------------------
+                0.00    0.02     256/256         Cell::~Cell() [12]
+[14]     3.7    0.00    0.02     256         std::__cxx11::list<Boid*, std::allocator<Boid*> >::~list() [14]
+                0.01    0.00     256/256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::~_List_base() [13]
+-----------------------------------------------
+                0.01    0.00  302095/302095      updateBoidCell(Boid&, Cell (*) [16], int, int) [3]
+[15]     2.5    0.01    0.00  302095         getOrthogonal(float&, float&, float, float, float, float) [15]
+                0.00    0.00  171902/24359021     sqrMag(float, float) [7]
+                0.00    0.00  473997/473997      dot(float, float, float, float) [41]
+                0.00    0.00  302095/303095      std::cos(float) [46]
+                0.00    0.00  302095/303095      std::sin(float) [47]
+-----------------------------------------------
+                0.00    0.00    1000/23311       main [1]
+                0.00    0.01   22311/23311       updateCell(Cell (*) [16], int, int) [2]
+[16]     2.5    0.00    0.01   23311         std::__cxx11::list<Boid*, std::allocator<Boid*> >::push_back(Boid*&&) [16]
+                0.00    0.01   23311/23311       void std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_insert<Boid*>(std::_List_iterator<Boid*>, Boid*&&) [18]
+                0.01    0.00   23311/23311       std::remove_reference<Boid*&>::type&& std::move<Boid*&>(Boid*&) [21]
+                0.00    0.00   23311/27586662     std::__cxx11::list<Boid*, std::allocator<Boid*> >::end() [5]
+-----------------------------------------------
+                0.00    0.00  380091/27563351     updateCell(Cell (*) [16], int, int) [2]
+                0.01    0.00 27183260/27563351     updateBoidCell(Boid&, Cell (*) [16], int, int) [3]
+[17]     2.4    0.01    0.00 27563351         std::operator!=(std::_List_iterator<Boid*> const&, std::_List_iterator<Boid*> const&) [17]
+-----------------------------------------------
+                0.00    0.01   23311/23311       std::__cxx11::list<Boid*, std::allocator<Boid*> >::push_back(Boid*&&) [16]
+[18]     1.2    0.00    0.01   23311         void std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_insert<Boid*>(std::_List_iterator<Boid*>, Boid*&&) [18]
+                0.00    0.00   23311/23311       std::_List_node<Boid*>* std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_create_node<Boid*>(Boid*&&) [28]
+                0.00    0.00   23311/93244       Boid*&& std::forward<Boid*>(std::remove_reference<Boid*>::type&) [20]
+                0.00    0.00   23311/23311       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_inc_size(unsigned long) [60]
+-----------------------------------------------
+                0.01    0.00 24840835/24840835     __gnu_cxx::__aligned_membuf<Boid*>::_M_ptr() [9]
+[19]     1.2    0.01    0.00 24840835         __gnu_cxx::__aligned_membuf<Boid*>::_M_addr() [19]
+-----------------------------------------------
+                0.00    0.00   23311/93244       void std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_insert<Boid*>(std::_List_iterator<Boid*>, Boid*&&) [18]
+                0.00    0.00   23311/93244       std::_List_node<Boid*>* std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_create_node<Boid*>(Boid*&&) [28]
+                0.00    0.00   23311/93244       void std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::construct<Boid*, Boid*>(std::allocator<std::_List_node<Boid*> >&, Boid**, Boid*&&) [29]
+                0.00    0.00   23311/93244       void __gnu_cxx::new_allocator<std::_List_node<Boid*> >::construct<Boid*, Boid*>(Boid**, Boid*&&) [30]
+[20]     1.2    0.01    0.00   93244         Boid*&& std::forward<Boid*>(std::remove_reference<Boid*>::type&) [20]
+-----------------------------------------------
+                0.01    0.00   23311/23311       std::__cxx11::list<Boid*, std::allocator<Boid*> >::push_back(Boid*&&) [16]
+[21]     1.2    0.01    0.00   23311         std::remove_reference<Boid*&>::type&& std::move<Boid*&>(Boid*&) [21]
+-----------------------------------------------
+                0.00    0.01     256/256         main [1]
+[22]     1.2    0.00    0.01     256         Cell::Cell() [22]
+                0.00    0.01     256/256         std::__cxx11::list<Boid*, std::allocator<Boid*> >::list() [27]
+-----------------------------------------------
+                0.01    0.00     256/256         std::allocator<std::_List_node<Boid*> >::allocator() [24]
+[23]     1.2    0.01    0.00     256         __gnu_cxx::new_allocator<std::_List_node<Boid*> >::new_allocator() [23]
+-----------------------------------------------
+                0.00    0.01     256/256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_impl::_List_impl() [25]
+[24]     1.2    0.00    0.01     256         std::allocator<std::_List_node<Boid*> >::allocator() [24]
+                0.01    0.00     256/256         __gnu_cxx::new_allocator<std::_List_node<Boid*> >::new_allocator() [23]
+-----------------------------------------------
+                0.00    0.01     256/256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_base() [26]
+[25]     1.2    0.00    0.01     256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_impl::_List_impl() [25]
+                0.00    0.01     256/256         std::allocator<std::_List_node<Boid*> >::allocator() [24]
+                0.00    0.00     256/256         std::__detail::_List_node_header::_List_node_header() [74]
+-----------------------------------------------
+                0.00    0.01     256/256         std::__cxx11::list<Boid*, std::allocator<Boid*> >::list() [27]
+[26]     1.2    0.00    0.01     256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_base() [26]
+                0.00    0.01     256/256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_impl::_List_impl() [25]
+-----------------------------------------------
+                0.00    0.01     256/256         Cell::Cell() [22]
+[27]     1.2    0.00    0.01     256         std::__cxx11::list<Boid*, std::allocator<Boid*> >::list() [27]
+                0.00    0.01     256/256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_base() [26]
+-----------------------------------------------
+                0.00    0.00   23311/23311       void std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_insert<Boid*>(std::_List_iterator<Boid*>, Boid*&&) [18]
+[28]     0.9    0.00    0.00   23311         std::_List_node<Boid*>* std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_create_node<Boid*>(Boid*&&) [28]
+                0.00    0.00   23311/23311       void std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::construct<Boid*, Boid*>(std::allocator<std::_List_node<Boid*> >&, Boid**, Boid*&&) [29]
+                0.00    0.00   23311/93244       Boid*&& std::forward<Boid*>(std::remove_reference<Boid*>::type&) [20]
+                0.00    0.00   23311/24840835     std::_List_node<Boid*>::_M_valptr() [6]
+                0.00    0.00   23311/23311       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_get_node() [59]
+                0.00    0.00   23311/46622       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_get_Node_allocator() [48]
+                0.00    0.00   23311/23311       std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::__allocated_ptr(std::allocator<std::_List_node<Boid*> >&, std::_List_node<Boid*>*) [53]
+                0.00    0.00   23311/23311       std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::operator=(decltype(nullptr)) [55]
+                0.00    0.00   23311/23311       std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::~__allocated_ptr() [54]
+-----------------------------------------------
+                0.00    0.00   23311/23311       std::_List_node<Boid*>* std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_create_node<Boid*>(Boid*&&) [28]
+[29]     0.6    0.00    0.00   23311         void std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::construct<Boid*, Boid*>(std::allocator<std::_List_node<Boid*> >&, Boid**, Boid*&&) [29]
+                0.00    0.00   23311/93244       Boid*&& std::forward<Boid*>(std::remove_reference<Boid*>::type&) [20]
+                0.00    0.00   23311/23311       void __gnu_cxx::new_allocator<std::_List_node<Boid*> >::construct<Boid*, Boid*>(Boid**, Boid*&&) [30]
+-----------------------------------------------
+                0.00    0.00   23311/23311       void std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::construct<Boid*, Boid*>(std::allocator<std::_List_node<Boid*> >&, Boid**, Boid*&&) [29]
+[30]     0.3    0.00    0.00   23311         void __gnu_cxx::new_allocator<std::_List_node<Boid*> >::construct<Boid*, Boid*>(Boid**, Boid*&&) [30]
+                0.00    0.00   23311/93244       Boid*&& std::forward<Boid*>(std::remove_reference<Boid*>::type&) [20]
+                0.00    0.00   23311/23311       operator new(unsigned long, void*) [63]
+-----------------------------------------------
+                0.00    0.00   22311/22311       updateCell(Cell (*) [16], int, int) [2]
+[31]     0.0    0.00    0.00   22311         std::__cxx11::list<Boid*, std::allocator<Boid*> >::erase(std::_List_const_iterator<Boid*>) [31]
+                0.00    0.00   22311/22311       std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_erase(std::_List_iterator<Boid*>) [32]
+                0.00    0.00   22311/30400422     std::_List_iterator<Boid*>::_List_iterator(std::__detail::_List_node_base*) [11]
+                0.00    0.00   22311/22311       std::_List_const_iterator<Boid*>::_M_const_cast() const [33]
+-----------------------------------------------
+                0.00    0.00   22311/22311       std::__cxx11::list<Boid*, std::allocator<Boid*> >::erase(std::_List_const_iterator<Boid*>) [31]
+[32]     0.0    0.00    0.00   22311         std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_erase(std::_List_iterator<Boid*>) [32]
+                0.00    0.00   22311/24840835     std::_List_node<Boid*>::_M_valptr() [6]
+                0.00    0.00   22311/22311       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_dec_size(unsigned long) [65]
+                0.00    0.00   22311/46622       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_get_Node_allocator() [48]
+                0.00    0.00   22311/23311       void std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::destroy<Boid*>(std::allocator<std::_List_node<Boid*> >&, Boid**) [57]
+                0.00    0.00   22311/23311       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_put_node(std::_List_node<Boid*>*) [61]
+-----------------------------------------------
+                0.00    0.00   22311/22311       std::__cxx11::list<Boid*, std::allocator<Boid*> >::erase(std::_List_const_iterator<Boid*>) [31]
+[33]     0.0    0.00    0.00   22311         std::_List_const_iterator<Boid*>::_M_const_cast() const [33]
+                0.00    0.00   22311/30400422     std::_List_iterator<Boid*>::_List_iterator(std::__detail::_List_node_base*) [11]
+-----------------------------------------------
+                0.00    0.00     256/256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::~_List_base() [13]
+[34]     0.0    0.00    0.00     256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_clear() [34]
+                0.00    0.00    1000/24840835     std::_List_node<Boid*>::_M_valptr() [6]
+                0.00    0.00    1000/46622       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_get_Node_allocator() [48]
+                0.00    0.00    1000/23311       void std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::destroy<Boid*>(std::allocator<std::_List_node<Boid*> >&, Boid**) [57]
+                0.00    0.00    1000/23311       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_put_node(std::_List_node<Boid*>*) [61]
+-----------------------------------------------
+                0.00    0.00  473997/473997      getOrthogonal(float&, float&, float, float, float, float) [15]
+[41]     0.0    0.00    0.00  473997         dot(float, float, float, float) [41]
+-----------------------------------------------
+                0.00    0.00    1000/304547      main [1]
+                0.00    0.00  303547/304547      updateCell(Cell (*) [16], int, int) [2]
+[42]     0.0    0.00    0.00  304547         getCell_x(float) [42]
+-----------------------------------------------
+                0.00    0.00    1000/304547      main [1]
+                0.00    0.00  303547/304547      updateCell(Cell (*) [16], int, int) [2]
+[43]     0.0    0.00    0.00  304547         getCell_y(float) [43]
+-----------------------------------------------
+                0.00    0.00  303547/303547      updateBoidCell(Boid&, Cell (*) [16], int, int) [3]
+[44]     0.0    0.00    0.00  303547         mag(float, float) [44]
+                0.00    0.00  303547/303547      std::sqrt(float) [45]
+-----------------------------------------------
+                0.00    0.00  303547/303547      mag(float, float) [44]
+[45]     0.0    0.00    0.00  303547         std::sqrt(float) [45]
+-----------------------------------------------
+                0.00    0.00    1000/303095      main [1]
+                0.00    0.00  302095/303095      getOrthogonal(float&, float&, float, float, float, float) [15]
+[46]     0.0    0.00    0.00  303095         std::cos(float) [46]
+-----------------------------------------------
+                0.00    0.00    1000/303095      main [1]
+                0.00    0.00  302095/303095      getOrthogonal(float&, float&, float, float, float, float) [15]
+[47]     0.0    0.00    0.00  303095         std::sin(float) [47]
+-----------------------------------------------
+                0.00    0.00    1000/46622       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_clear() [34]
+                0.00    0.00   22311/46622       std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_erase(std::_List_iterator<Boid*>) [32]
+                0.00    0.00   23311/46622       std::_List_node<Boid*>* std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_create_node<Boid*>(Boid*&&) [28]
+[48]     0.0    0.00    0.00   46622         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_get_Node_allocator() [48]
+-----------------------------------------------
+                0.00    0.00   23311/23311       std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::deallocate(std::allocator<std::_List_node<Boid*> >&, std::_List_node<Boid*>*, unsigned long) [56]
+[49]     0.0    0.00    0.00   23311         __gnu_cxx::new_allocator<std::_List_node<Boid*> >::deallocate(std::_List_node<Boid*>*, unsigned long) [49]
+-----------------------------------------------
+                0.00    0.00   23311/23311       void std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::destroy<Boid*>(std::allocator<std::_List_node<Boid*> >&, Boid**) [57]
+[50]     0.0    0.00    0.00   23311         void __gnu_cxx::new_allocator<std::_List_node<Boid*> >::destroy<Boid*>(Boid**) [50]
+-----------------------------------------------
+                0.00    0.00   23311/23311       std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::allocate(std::allocator<std::_List_node<Boid*> >&, unsigned long) [58]
+[51]     0.0    0.00    0.00   23311         __gnu_cxx::new_allocator<std::_List_node<Boid*> >::allocate(unsigned long, void const*) [51]
+                0.00    0.00   23311/23311       __gnu_cxx::new_allocator<std::_List_node<Boid*> >::_M_max_size() const [52]
+-----------------------------------------------
+                0.00    0.00   23311/23311       __gnu_cxx::new_allocator<std::_List_node<Boid*> >::allocate(unsigned long, void const*) [51]
+[52]     0.0    0.00    0.00   23311         __gnu_cxx::new_allocator<std::_List_node<Boid*> >::_M_max_size() const [52]
+-----------------------------------------------
+                0.00    0.00   23311/23311       std::_List_node<Boid*>* std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_create_node<Boid*>(Boid*&&) [28]
+[53]     0.0    0.00    0.00   23311         std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::__allocated_ptr(std::allocator<std::_List_node<Boid*> >&, std::_List_node<Boid*>*) [53]
+                0.00    0.00   23311/23311       std::allocator<std::_List_node<Boid*> >* std::__addressof<std::allocator<std::_List_node<Boid*> > >(std::allocator<std::_List_node<Boid*> >&) [62]
+-----------------------------------------------
+                0.00    0.00   23311/23311       std::_List_node<Boid*>* std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_create_node<Boid*>(Boid*&&) [28]
+[54]     0.0    0.00    0.00   23311         std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::~__allocated_ptr() [54]
+-----------------------------------------------
+                0.00    0.00   23311/23311       std::_List_node<Boid*>* std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_create_node<Boid*>(Boid*&&) [28]
+[55]     0.0    0.00    0.00   23311         std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::operator=(decltype(nullptr)) [55]
+-----------------------------------------------
+                0.00    0.00   23311/23311       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_put_node(std::_List_node<Boid*>*) [61]
+[56]     0.0    0.00    0.00   23311         std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::deallocate(std::allocator<std::_List_node<Boid*> >&, std::_List_node<Boid*>*, unsigned long) [56]
+                0.00    0.00   23311/23311       __gnu_cxx::new_allocator<std::_List_node<Boid*> >::deallocate(std::_List_node<Boid*>*, unsigned long) [49]
+-----------------------------------------------
+                0.00    0.00    1000/23311       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_clear() [34]
+                0.00    0.00   22311/23311       std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_erase(std::_List_iterator<Boid*>) [32]
+[57]     0.0    0.00    0.00   23311         void std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::destroy<Boid*>(std::allocator<std::_List_node<Boid*> >&, Boid**) [57]
+                0.00    0.00   23311/23311       void __gnu_cxx::new_allocator<std::_List_node<Boid*> >::destroy<Boid*>(Boid**) [50]
+-----------------------------------------------
+                0.00    0.00   23311/23311       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_get_node() [59]
+[58]     0.0    0.00    0.00   23311         std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::allocate(std::allocator<std::_List_node<Boid*> >&, unsigned long) [58]
+                0.00    0.00   23311/23311       __gnu_cxx::new_allocator<std::_List_node<Boid*> >::allocate(unsigned long, void const*) [51]
+-----------------------------------------------
+                0.00    0.00   23311/23311       std::_List_node<Boid*>* std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_create_node<Boid*>(Boid*&&) [28]
+[59]     0.0    0.00    0.00   23311         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_get_node() [59]
+                0.00    0.00   23311/23311       std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::allocate(std::allocator<std::_List_node<Boid*> >&, unsigned long) [58]
+-----------------------------------------------
+                0.00    0.00   23311/23311       void std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_insert<Boid*>(std::_List_iterator<Boid*>, Boid*&&) [18]
+[60]     0.0    0.00    0.00   23311         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_inc_size(unsigned long) [60]
+-----------------------------------------------
+                0.00    0.00    1000/23311       std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_clear() [34]
+                0.00    0.00   22311/23311       std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_erase(std::_List_iterator<Boid*>) [32]
+[61]     0.0    0.00    0.00   23311         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_put_node(std::_List_node<Boid*>*) [61]
+                0.00    0.00   23311/23311       std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::deallocate(std::allocator<std::_List_node<Boid*> >&, std::_List_node<Boid*>*, unsigned long) [56]
+-----------------------------------------------
+                0.00    0.00   23311/23311       std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::__allocated_ptr(std::allocator<std::_List_node<Boid*> >&, std::_List_node<Boid*>*) [53]
+[62]     0.0    0.00    0.00   23311         std::allocator<std::_List_node<Boid*> >* std::__addressof<std::allocator<std::_List_node<Boid*> > >(std::allocator<std::_List_node<Boid*> >&) [62]
+-----------------------------------------------
+                0.00    0.00   23311/23311       void __gnu_cxx::new_allocator<std::_List_node<Boid*> >::construct<Boid*, Boid*>(Boid**, Boid*&&) [30]
+[63]     0.0    0.00    0.00   23311         operator new(unsigned long, void*) [63]
+-----------------------------------------------
+                0.00    0.00   22311/22311       updateCell(Cell (*) [16], int, int) [2]
+[64]     0.0    0.00    0.00   22311         std::_List_const_iterator<Boid*>::_List_const_iterator(std::_List_iterator<Boid*> const&) [64]
+-----------------------------------------------
+                0.00    0.00   22311/22311       std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_erase(std::_List_iterator<Boid*>) [32]
+[65]     0.0    0.00    0.00   22311         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_dec_size(unsigned long) [65]
+-----------------------------------------------
+                0.00    0.00    3000/3000        main [1]
+[66]     0.0    0.00    0.00    3000         randFloat(float, float) [66]
+-----------------------------------------------
+                0.00    0.00    1000/1000        main [1]
+[67]     0.0    0.00    0.00    1000         Boid::Boid() [67]
+-----------------------------------------------
+                0.00    0.00    1000/1000        main [1]
+[68]     0.0    0.00    0.00    1000         Boid::Boid(float, float, float, float) [68]
+-----------------------------------------------
+                0.00    0.00     300/300         main [1]
+[69]     0.0    0.00    0.00     300         save(_IO_FILE*, Boid*, int, int) [69]
+-----------------------------------------------
+                0.00    0.00     256/256         std::allocator<std::_List_node<Boid*> >::~allocator() [71]
+[70]     0.0    0.00    0.00     256         __gnu_cxx::new_allocator<std::_List_node<Boid*> >::~new_allocator() [70]
+-----------------------------------------------
+                0.00    0.00     256/256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_impl::~_List_impl() [72]
+[71]     0.0    0.00    0.00     256         std::allocator<std::_List_node<Boid*> >::~allocator() [71]
+                0.00    0.00     256/256         __gnu_cxx::new_allocator<std::_List_node<Boid*> >::~new_allocator() [70]
+-----------------------------------------------
+                0.00    0.00     256/256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::~_List_base() [13]
+[72]     0.0    0.00    0.00     256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_impl::~_List_impl() [72]
+                0.00    0.00     256/256         std::allocator<std::_List_node<Boid*> >::~allocator() [71]
+-----------------------------------------------
+                0.00    0.00     256/256         std::__detail::_List_node_header::_List_node_header() [74]
+[73]     0.0    0.00    0.00     256         std::__detail::_List_node_header::_M_init() [73]
+-----------------------------------------------
+                0.00    0.00     256/256         std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_impl::_List_impl() [25]
+[74]     0.0    0.00    0.00     256         std::__detail::_List_node_header::_List_node_header() [74]
+                0.00    0.00     256/256         std::__detail::_List_node_header::_M_init() [73]
+-----------------------------------------------
+                0.00    0.00       1/1           _GLOBAL__sub_I_leftMargin [76]
+[75]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [75]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+   [2] updateCell(Cell (*) [16], int, int) [52] __gnu_cxx::new_allocator<std::_List_node<Boid*> >::_M_max_size() const [34] std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_clear()
+  [15] getOrthogonal(float&, float&, float, float, float, float) [4] std::_List_iterator<Boid*>::operator*() const [26] std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_base()
+   [3] updateBoidCell(Boid&, Cell (*) [16], int, int) [33] std::_List_const_iterator<Boid*>::_M_const_cast() const [13] std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::~_List_base()
+  [41] dot(float, float, float, float) [24] std::allocator<std::_List_node<Boid*> >::allocator() [28] std::_List_node<Boid*>* std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_create_node<Boid*>(Boid*&&)
+  [44] mag(float, float)      [71] std::allocator<std::_List_node<Boid*> >::~allocator() [5] std::__cxx11::list<Boid*, std::allocator<Boid*> >::end()
+  [75] __static_initialization_and_destruction_0(int, int) [6] std::_List_node<Boid*>::_M_valptr() [10] std::__cxx11::list<Boid*, std::allocator<Boid*> >::begin()
+  [69] save(_IO_FILE*, Boid*, int, int) [11] std::_List_iterator<Boid*>::_List_iterator(std::__detail::_List_node_base*) [31] std::__cxx11::list<Boid*, std::allocator<Boid*> >::erase(std::_List_const_iterator<Boid*>)
+   [7] sqrMag(float, float)    [8] std::_List_iterator<Boid*>::operator++(int) [32] std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_erase(std::_List_iterator<Boid*>)
+  [42] getCell_x(float)       [53] std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::__allocated_ptr(std::allocator<std::_List_node<Boid*> >&, std::_List_node<Boid*>*) [18] void std::__cxx11::list<Boid*, std::allocator<Boid*> >::_M_insert<Boid*>(std::_List_iterator<Boid*>, Boid*&&)
+  [43] getCell_y(float)       [54] std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::~__allocated_ptr() [16] std::__cxx11::list<Boid*, std::allocator<Boid*> >::push_back(Boid*&&)
+  [66] randFloat(float, float) [55] std::__allocated_ptr<std::allocator<std::_List_node<Boid*> > >::operator=(decltype(nullptr)) [27] std::__cxx11::list<Boid*, std::allocator<Boid*> >::list()
+  [67] Boid::Boid()           [56] std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::deallocate(std::allocator<std::_List_node<Boid*> >&, std::_List_node<Boid*>*, unsigned long) [14] std::__cxx11::list<Boid*, std::allocator<Boid*> >::~list()
+  [68] Boid::Boid(float, float, float, float) [57] void std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::destroy<Boid*>(std::allocator<std::_List_node<Boid*> >&, Boid**) [73] std::__detail::_List_node_header::_M_init()
+  [22] Cell::Cell()           [58] std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::allocate(std::allocator<std::_List_node<Boid*> >&, unsigned long) [74] std::__detail::_List_node_header::_List_node_header()
+  [12] Cell::~Cell()          [29] void std::allocator_traits<std::allocator<std::_List_node<Boid*> > >::construct<Boid*, Boid*>(std::allocator<std::_List_node<Boid*> >&, Boid**, Boid*&&) [62] std::allocator<std::_List_node<Boid*> >* std::__addressof<std::allocator<std::_List_node<Boid*> > >(std::allocator<std::_List_node<Boid*> >&)
+  [49] __gnu_cxx::new_allocator<std::_List_node<Boid*> >::deallocate(std::_List_node<Boid*>*, unsigned long) [64] std::_List_const_iterator<Boid*>::_List_const_iterator(std::_List_iterator<Boid*> const&) [46] std::cos(float)
+  [50] void __gnu_cxx::new_allocator<std::_List_node<Boid*> >::destroy<Boid*>(Boid**) [25] std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_impl::_List_impl() [47] std::sin(float)
+  [51] __gnu_cxx::new_allocator<std::_List_node<Boid*> >::allocate(unsigned long, void const*) [72] std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_List_impl::~_List_impl() [21] std::remove_reference<Boid*&>::type&& std::move<Boid*&>(Boid*&)
+  [30] void __gnu_cxx::new_allocator<std::_List_node<Boid*> >::construct<Boid*, Boid*>(Boid**, Boid*&&) [65] std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_dec_size(unsigned long) [45] std::sqrt(float)
+  [23] __gnu_cxx::new_allocator<std::_List_node<Boid*> >::new_allocator() [59] std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_get_node() [20] Boid*&& std::forward<Boid*>(std::remove_reference<Boid*>::type&)
+  [70] __gnu_cxx::new_allocator<std::_List_node<Boid*> >::~new_allocator() [60] std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_inc_size(unsigned long) [17] std::operator!=(std::_List_iterator<Boid*> const&, std::_List_iterator<Boid*> const&)
+   [9] __gnu_cxx::__aligned_membuf<Boid*>::_M_ptr() [61] std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_put_node(std::_List_node<Boid*>*) [63] operator new(unsigned long, void*)
+  [19] __gnu_cxx::__aligned_membuf<Boid*>::_M_addr() [48] std::__cxx11::_List_base<Boid*, std::allocator<Boid*> >::_M_get_Node_allocator()
