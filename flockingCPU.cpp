@@ -10,7 +10,7 @@ int leftMargin = 64;
 int rightMargin = xSize - 64;
 int bottomMargin = 64;
 int topMargin = ySize - 64;
-const int numParticles = 1000;
+const int numBoids = 1000;
 const int numFrames = 300;
 
 const char *filepath = "data.txt";
@@ -87,10 +87,10 @@ float randFloat(float min, float max) {
 /*
 Saves 
 */
-void save(FILE *fptr, Boid arr[], int numParticles, int frameNumber) {
+void save(FILE *fptr, Boid arr[], int numBoids, int frameNumber) {
     // Write vector array to file
     fprintf(fptr, "Frame %d\n", frameNumber);
-    for(int i=0; i<numParticles; i++) {
+    for(int i=0; i<numBoids; i++) {
         fprintf(fptr, "%f %f %f %f\n", arr[i].px, arr[i].py, arr[i].vx, arr[i].vy);
     }    
 }
@@ -339,6 +339,34 @@ void updateFrame(Cell cellsArr[])
     }
 }
 
+Boid* initBoids(int numBoids)
+{
+    // Initialise array of boids
+    Boid* arr = (Boid*)malloc(numBoids * sizeof(Boid));
+
+    //Give each a random position
+    for(int i = 0; i < numBoids; i++) {
+        float px = randFloat(0, xSize);
+        float py = randFloat(0, ySize);
+        // Random normalised direction
+        float randTheta = randFloat(0, 2 * PI);
+        float vx = cos(randTheta) * minSpeed;
+        float vy = sin(randTheta) * minSpeed;
+        arr[i] = Boid(px, py, vx, vy);
+    }
+
+    return arr;
+}
+
+Cell* initCells(Boid* arr, Cell* cellsArr)
+{
+    for(int i = 0; i < numBoids; i++) {
+        //Add pointer to boid to cell
+        cellsArr[getCell_i(arr[i].px, arr[i].py)].boids.push_back(&arr[i]);
+    }
+    return cellsArr;
+}
+
 /*
 Main.
 */
@@ -350,42 +378,24 @@ int main() {
         printf("%s", "Error opening file");
         return 1;
     }
-
-    Cell cellsArr[numCells_x * numCells_y];
-
-    // Initialise array of boids
-    Boid arr[numParticles];
-    for(int i=0; i<numParticles; i++) {
-        float px = randFloat(0, xSize);
-        float py = randFloat(0, ySize);
-        // Random normalised direction
-        float randTheta = randFloat(0, 2 * PI);
-        float vx = cos(randTheta) * minSpeed;
-        float vy = sin(randTheta) * minSpeed;
-        arr[i] = Boid(px, py, vx, vy);
-
-        //Add pointer to boid to cell
-        cellsArr[getCell_i(px, py)].boids.push_back(&arr[i]);
-    }
-
-    save(fptr, arr, numParticles, 0);
-
     
+    // Initialise arrays
+    Boid* arr = initBoids(numBoids);
+    Cell cellsArr[numCells_x * numCells_y];
+    initCells(arr, cellsArr);    
+
+    save(fptr, arr, numBoids, 0);
 
     // Update boids
     for (int frame=1; frame<numFrames; frame++) {
         // For each cell update each boid inside
         updateFrame(cellsArr);
         
-        save(fptr, arr, numParticles, frame);
+        save(fptr, arr, numBoids, frame);
     }
 
-
-    
     // Close the file
     fclose(fptr);
-
-
 
     return 0;
 }
