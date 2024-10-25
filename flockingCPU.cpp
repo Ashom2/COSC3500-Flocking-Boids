@@ -87,11 +87,11 @@ float randFloat(float min, float max) {
 /*
 Saves 
 */
-void save(FILE *fptr, Boid arr[], int numBoids, int frameNumber) {
+void save(FILE *fptr, Boid boidsArray[], int numBoids, int frameNumber) {
     // Write vector array to file
     fprintf(fptr, "Frame %d\n", frameNumber);
     for(int i=0; i<numBoids; i++) {
-        fprintf(fptr, "%f %f %f %f\n", arr[i].px, arr[i].py, arr[i].vx, arr[i].vy);
+        fprintf(fptr, "%f %f %f %f\n", boidsArray[i].px, boidsArray[i].py, boidsArray[i].vx, boidsArray[i].vy);
     }    
 }
 
@@ -151,7 +151,7 @@ void getOrthogonal(float &orthogonalVector_x, float &orthogonalVector_y,
 /*
 Updates a single boid in a cell
 */
-void updateBoidCell(Boid& b, Cell cellsArr[], int cell_x, int cell_y) {
+void updateBoidCell(Boid& b, Cell cellsArray[], int cell_x, int cell_y) {
     float avoidVector_x = 0, avoidVector_y = 0;
     float formationDir_x = 0, formationDir_y = 0;
     float formationPos_x = 0, formationPos_y = 0;
@@ -164,7 +164,7 @@ void updateBoidCell(Boid& b, Cell cellsArr[], int cell_x, int cell_y) {
             if (y < 0 || y >= numCells_y) continue; //Ignore cells beyond boundary
 
             // Iterate over boids in nieghboring cell
-            for (auto const& i : cellsArr[x + y * numCells_x].boids) {
+            for (auto const& i : cellsArray[x + y * numCells_x].boids) {
                 Boid& o = *i;
                 
                 if (&b == &o) continue; //Ignore itself
@@ -291,7 +291,7 @@ int getCell_i(float x, float y) {
 
 
 
-void updateCell(Cell cellsArr[], int cx, int cy) {
+void updateCell(Cell cellsArray[], int cx, int cy) {
     //TODO I was working on an optimisation to save all neighboring cell's boids to an array to be reused for the whole cell
     // printf("updating cell\n");
     // Construct array of all boids in neighboring cells
@@ -303,9 +303,9 @@ void updateCell(Cell cellsArr[], int cx, int cy) {
     //     for(int y = cy - 1; y <= cy + 1; y++) {
     //         if (y < 0 || y >= numCells_y) continue; //Ignore cells beyond boundary
 
-    //         neighboringBoids = (Boid**)realloc(neighboringBoids, (1 + index + cellsArr[x][y].boids.size()) * sizeof(Boid*));
+    //         neighboringBoids = (Boid**)realloc(neighboringBoids, (1 + index + cellsArray[x][y].boids.size()) * sizeof(Boid*));
     //         // Iterate over boids in nieghboring cell
-    //         for (auto const& i : cellsArr[x][y].boids) {
+    //         for (auto const& i : cellsArray[x][y].boids) {
     //             Boid& o = *i;
     //             neighboringBoids[index++] = &o;
     //         }
@@ -315,26 +315,26 @@ void updateCell(Cell cellsArr[], int cx, int cy) {
 
     // For each boid in the cell
     int ci = cx + cy * numCells_x;
-    for (auto it = cellsArr[ci].boids.begin(); it!=cellsArr[ci].boids.end(); it++) {
+    for (auto it = cellsArray[ci].boids.begin(); it!=cellsArray[ci].boids.end(); it++) {
         Boid& b = **it; 
 
-        updateBoidCell(b, cellsArr, cx, cy);
+        updateBoidCell(b, cellsArray, cx, cy);
 
         // Update boid in cell
         int ni = getCell_i(b.px, b.py);
         if (ni != ci) {
-            cellsArr[ni].boids.push_back(&b);
-            it = cellsArr[ci].boids.erase(it);
+            cellsArray[ni].boids.push_back(&b);
+            it = cellsArray[ci].boids.erase(it);
         }
     }
 }
 
-void updateFrame(Cell cellsArr[])
+void updateFrame(Cell cellsArray[])
 {
     // TODO could potentially be faster if we fed a lookup table to the functions
     for(int x=0; x<numCells_x; x++) {
         for(int y=0; y<numCells_y; y++) {
-            updateCell(cellsArr, x, y);
+            updateCell(cellsArray, x, y);
         }
     }
 }
@@ -342,7 +342,7 @@ void updateFrame(Cell cellsArr[])
 Boid* initBoids(int numBoids)
 {
     // Initialise array of boids
-    Boid* arr = (Boid*)malloc(numBoids * sizeof(Boid));
+    Boid* boidsArray = (Boid*)malloc(numBoids * sizeof(Boid));
 
     //Give each a random position
     for(int i = 0; i < numBoids; i++) {
@@ -352,19 +352,19 @@ Boid* initBoids(int numBoids)
         float randTheta = randFloat(0, 2 * PI);
         float vx = cos(randTheta) * minSpeed;
         float vy = sin(randTheta) * minSpeed;
-        arr[i] = Boid(px, py, vx, vy);
+        boidsArray[i] = Boid(px, py, vx, vy);
     }
 
-    return arr;
+    return boidsArray;
 }
 
-Cell* initCells(Boid* arr, Cell* cellsArr)
+Cell* initCells(Boid* boidsArray, Cell* cellsArray)
 {
     for(int i = 0; i < numBoids; i++) {
         //Add pointer to boid to cell
-        cellsArr[getCell_i(arr[i].px, arr[i].py)].boids.push_back(&arr[i]);
+        cellsArray[getCell_i(boidsArray[i].px, boidsArray[i].py)].boids.push_back(&boidsArray[i]);
     }
-    return cellsArr;
+    return cellsArray;
 }
 
 /*
@@ -380,18 +380,18 @@ int main() {
     }
     
     // Initialise arrays
-    Boid* arr = initBoids(numBoids);
-    Cell cellsArr[numCells_x * numCells_y];
-    initCells(arr, cellsArr);    
+    Boid* boidsArray = initBoids(numBoids);
+    Cell cellsArray[numCells_x * numCells_y];
+    initCells(boidsArray, cellsArray);    
 
-    save(fptr, arr, numBoids, 0);
+    save(fptr, boidsArray, numBoids, 0);
 
     // Update boids
     for (int frame=1; frame<numFrames; frame++) {
         // For each cell update each boid inside
-        updateFrame(cellsArr);
+        updateFrame(cellsArray);
         
-        save(fptr, arr, numBoids, frame);
+        save(fptr, boidsArray, numBoids, frame);
     }
 
     // Close the file
