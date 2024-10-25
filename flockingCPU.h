@@ -5,6 +5,8 @@
 
 struct Cell;
 
+class Boid;
+
 /**
 * @brief updates all boids in cellsArr
 *
@@ -12,3 +14,7 @@ struct Cell;
 * @return void
 * */
 void updateFrame(Cell cellsArr[]);
+
+Boid* initBoids(int numBoids);
+
+Cell* initCells(Boid* arr, Cell* cellsArr);
