@@ -22,4 +22,4 @@ void updateFrame(Cell cellsArr[]);
 
 Boid* initBoids(int numBoids);
 
-Cell* initCells(Boid* arr, Cell* cellsArr);
+Cell* initCells(int numBoids, Boid* arr, Cell* cellsArr);
