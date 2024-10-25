@@ -72,13 +72,6 @@ class Boid {
         }
 };
 
-/*
-Cell class to represent a subdivision of the simulation space containing a list of pointers to boids
-*/
-struct Cell {
-    std::list<Boid*> boids;
-};
-
 // Sourced from https://stackoverflow.com/questions/686353/random-float-number-generation
 float randFloat(float min, float max) {
     return min + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(max-min)));
