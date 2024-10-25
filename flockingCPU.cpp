@@ -1,7 +1,4 @@
-#include <iostream>
-#include <math.h>
-#include <list>
-#include <immintrin.h>
+#include <flockingCPU.h>
 
 const float PI = 3.141592653589793238462643383279502884;
 
