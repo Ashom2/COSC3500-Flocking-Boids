@@ -65,14 +65,15 @@ int main()
     // Column headings
     fprintf(fptr, "N, Time (us)\n");
 
-
+    int max = 10000;
     // Do the profiling
-    for (int N = 1; N < 10001; N *= 10) {
+    for (int N = 1; N < max + 1; N *= 10) {
         ProfileAt(N, fptr);
         ProfileAt(N * 10 * pow(10, 0.25), fptr);
         ProfileAt(N * 10 * pow(10, 0.5), fptr);
         ProfileAt(N * 10 * pow(10, 0.75), fptr);
     }
+    ProfileAt(max, fptr);
 
     // Close the file
     fclose(fptr);
