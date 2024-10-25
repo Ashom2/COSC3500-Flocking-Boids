@@ -356,7 +356,6 @@ int main() {
     Cell cellsArr[numCells_x * numCells_y];
 
     // Initialise array of boids
-    Boid arr[numParticles];
     for(int i=0; i<numParticles; i++) {
         float px = randFloat(0, xSize);
         float py = randFloat(0, ySize);
@@ -364,10 +363,10 @@ int main() {
         float randTheta = randFloat(0, 2 * PI);
         float vx = cos(randTheta) * minSpeed;
         float vy = sin(randTheta) * minSpeed;
-        arr[i] = Boid(px, py, vx, vy);
+        Boid b = Boid(px, py, vx, vy);
 
         //Add pointer to boid to cell
-        cellsArr[getCell_i(px, py)].boids.push_back(&arr[i]);
+        cellsArr[getCell_i(px, py)].boids.push_back(&b);
     }
 
     save(fptr, cellsArr, numParticles, 0);
