@@ -1,4 +1,4 @@
-#include <flockingCPU.h>
+#include "flockingCPU.h"
 
 const float PI = 3.141592653589793238462643383279502884;
 
@@ -11,6 +11,7 @@ int rightMargin = xSize - 64;
 int bottomMargin = 64;
 int topMargin = ySize - 64;
 const int numParticles = 1000;
+const int numFrames = 300;
 
 const char *filepath = "data.txt";
 
@@ -318,6 +319,16 @@ void updateCell(Cell cellsArr[numCells_x][numCells_y], int cx, int cy) {
     }
 }
 
+void updateCells(Cell cellsArr[numCells_x][numCells_y])
+{
+    // TODO could potentially be faster if we fed a lookup table to the functions
+    for(int x=0; x<numCells_x; x++) {
+        for(int y=0; y<numCells_y; y++) {
+            updateCell(cellsArr, x, y);
+        }
+    }
+}
+
 /*
 Main.
 */
@@ -352,14 +363,9 @@ int main() {
 
 
     // Update boids
-    for (int frame=1; frame<300; frame++) {
+    for (int frame=1; frame<numFrames; frame++) {
         // For each cell update each boid inside
-        // TODO could potentially be faster if we fed a lookup table to the functions
-        for(int x=0; x<numCells_x; x++) {
-            for(int y=0; y<numCells_y; y++) {
-                updateCell(cellsArr, x, y);
-            }
-        }
+        updateCells(cellsArr);
         
         save(fptr, arr, numParticles, frame);
     }
