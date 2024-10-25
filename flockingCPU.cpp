@@ -87,14 +87,12 @@ float randFloat(float min, float max) {
 /*
 Saves 
 */
-void save(FILE *fptr, Cell cellsArr[], int numParticles, int frameNumber) {
-    // Write all boids to file
+void save(FILE *fptr, Boid arr[], int numParticles, int frameNumber) {
+    // Write vector array to file
     fprintf(fptr, "Frame %d\n", frameNumber);
-    for (int i = 0; i < numCells_x * numCells_y; i++) {
-        for (Boid* b : cellsArr[i].boids) {
-            fprintf(fptr, "%f %f %f %f\n", (*b).px, (*b).py, (*b).vx, (*b).vy);
-        }    
-    }
+    for(int i=0; i<numParticles; i++) {
+        fprintf(fptr, "%f %f %f %f\n", arr[i].px, arr[i].py, arr[i].vx, arr[i].vy);
+    }    
 }
 
 /*
@@ -316,7 +314,7 @@ void updateCell(Cell cellsArr[], int cx, int cy) {
     // printf("%d\n", index);
 
     // For each boid in the cell
-    int ci = getCell_i(cx, cy);
+    int ci = cx + cy * numCells_x;
     for (auto it = cellsArr[ci].boids.begin(); it!=cellsArr[ci].boids.end(); it++) {
         Boid& b = **it; 
 
@@ -370,7 +368,7 @@ int main() {
         cellsArr[getCell_i(px, py)].boids.push_back(&arr[i]);
     }
 
-    save(fptr, cellsArr, numParticles, 0);
+    save(fptr, arr, numParticles, 0);
 
 
 
@@ -379,7 +377,7 @@ int main() {
         // For each cell update each boid inside
         updateCells(cellsArr);
         
-        save(fptr, cellsArr, numParticles, frame);
+        save(fptr, arr, numParticles, frame);
     }
 
 
