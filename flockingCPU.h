@@ -3,9 +3,14 @@
 #include <list>
 #include <immintrin.h>
 
-struct Cell;
-
 class Boid;
+
+/*
+Cell class to represent a subdivision of the simulation space containing a list of pointers to boids
+*/
+struct Cell {
+    std::list<Boid*> boids;
+};
 
 /**
 * @brief updates all boids in cellsArr
