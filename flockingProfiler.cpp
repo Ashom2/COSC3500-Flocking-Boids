@@ -6,6 +6,8 @@
 //Must be compiled with flockingCPU.cpp
 //To run do:
 //g++ -o flockingProfiler flockingProfiler.cpp flockingCPU.cpp
+//Or
+//Use the makefile / slurm script
 
 const char *profilingFilepath = "ProfilingData.csv";
 
@@ -69,9 +71,9 @@ int main()
     // Do the profiling
     for (int N = 1; N < max; N *= 10) {
         ProfileAt(N, fptr);
-        ProfileAt(N * 10 * pow(10, 0.25), fptr);
-        ProfileAt(N * 10 * pow(10, 0.5), fptr);
-        ProfileAt(N * 10 * pow(10, 0.75), fptr);
+        ProfileAt(N * pow(10, 0.25), fptr);
+        ProfileAt(N * pow(10, 0.5), fptr);
+        ProfileAt(N * pow(10, 0.75), fptr);
     }
     ProfileAt(max, fptr);
 
