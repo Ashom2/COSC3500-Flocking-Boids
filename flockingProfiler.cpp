@@ -30,6 +30,27 @@ void save(FILE *fptr, int number, double time1) {
 const int numCells_x = 16;
 const int numCells_y = 16;
 
+void ProfileAt(int N, FILE* fptr)
+{
+    //Initialize arrays
+    Boid* boidsArray = initBoids(N);
+    Cell cellsArray[numCells_x * numCells_y];
+    initCells(N, boidsArray, cellsArray);    
+
+    // Begin timing
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Do function
+    updateFrame(cellsArray);
+
+    // End timing
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::micro> duration_us = end - start;
+
+    printf("N: %d. Time taken: %g us\n", N, duration_us.count());
+
+    save(fptr, N, duration_us.count());
+}
 
 int main()
 {
@@ -41,30 +62,16 @@ int main()
         return 1;
     }
 
-    //Column headings
+    // Column headings
     fprintf(fptr, "N, Time (ms)\n");
 
 
-
+    // Do the profiling
     for (int N = 1; N < 100001; N *= 10) {
-        //Initialize arrays
-        Boid* boidsArray = initBoids(N);
-        Cell cellsArray[numCells_x * numCells_y];
-        initCells(N, boidsArray, cellsArray);    
-
-        // Begin timing
-        auto start = std::chrono::high_resolution_clock::now();
-
-        // Do function
-        updateFrame(cellsArray);
-
-        // End timing
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double, std::micro> duration_us = end - start;
-
-        printf("Time taken: %g us\n", duration_us.count());
-
-        save(fptr, N, duration_us.count());
+        ProfileAt(N, fptr);
+        ProfileAt(N * 10 * pow(10, 0.25), fptr);
+        ProfileAt(N * 10 * pow(10, 0.5), fptr);
+        ProfileAt(N * 10 * pow(10, 0.75), fptr);
     }
 
     // Close the file
