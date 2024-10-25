@@ -87,12 +87,14 @@ float randFloat(float min, float max) {
 /*
 Saves 
 */
-void save(FILE *fptr, Boid arr[], int numParticles, int frameNumber) {
-    // Write vector array to file
+void save(FILE *fptr, Cell cellsArr[], int numParticles, int frameNumber) {
+    // Write all boids to file
     fprintf(fptr, "Frame %d\n", frameNumber);
-    for(int i=0; i<numParticles; i++) {
-        fprintf(fptr, "%f %f %f %f\n", arr[i].px, arr[i].py, arr[i].vx, arr[i].vy);
-    }    
+    for (int i = 0; i < numCells_x * numCells_y; i++) {
+        for (Boid* b : cellsArr[i].boids) {
+            fprintf(fptr, "%f %f %f %f\n", (*b).px, (*b).py, (*b).vx, (*b).vy);
+        }    
+    }
 }
 
 /*
@@ -151,7 +153,7 @@ void getOrthogonal(float &orthogonalVector_x, float &orthogonalVector_y,
 /*
 Updates a single boid in a cell
 */
-void updateBoidCell(Boid& b, Cell cellsArr[numCells_x][numCells_y], int cell_x, int cell_y) {
+void updateBoidCell(Boid& b, Cell cellsArr[], int cell_x, int cell_y) {
     float avoidVector_x = 0, avoidVector_y = 0;
     float formationDir_x = 0, formationDir_y = 0;
     float formationPos_x = 0, formationPos_y = 0;
@@ -164,7 +166,7 @@ void updateBoidCell(Boid& b, Cell cellsArr[numCells_x][numCells_y], int cell_x, 
             if (y < 0 || y >= numCells_y) continue; //Ignore cells beyond boundary
 
             // Iterate over boids in nieghboring cell
-            for (auto const& i : cellsArr[x][y].boids) {
+            for (auto const& i : cellsArr[x + y * numCells_x].boids) {
                 Boid& o = *i;
                 
                 if (&b == &o) continue; //Ignore itself
@@ -281,7 +283,17 @@ int getCell_y(float y) {
     return ny;
 }
 
-void updateCell(Cell cellsArr[numCells_x][numCells_y], int cx, int cy) {
+/*
+Retrieves the 1D index of a cell at position x and y
+*/
+int getCell_i(float x, float y) {
+    //TODO check out std::clamp
+    return getCell_x(x) + getCell_y(y) * numCells_x;
+}
+
+
+
+void updateCell(Cell cellsArr[], int cx, int cy) {
     //TODO I was working on an optimisation to save all neighboring cell's boids to an array to be reused for the whole cell
     // printf("updating cell\n");
     // Construct array of all boids in neighboring cells
@@ -304,22 +316,22 @@ void updateCell(Cell cellsArr[numCells_x][numCells_y], int cx, int cy) {
     // printf("%d\n", index);
 
     // For each boid in the cell
-    for (auto it = cellsArr[cx][cy].boids.begin(); it!=cellsArr[cx][cy].boids.end(); it++) {
+    int ci = getCell_i(cx, cy);
+    for (auto it = cellsArr[ci].boids.begin(); it!=cellsArr[ci].boids.end(); it++) {
         Boid& b = **it; 
 
         updateBoidCell(b, cellsArr, cx, cy);
 
         // Update boid in cell
-        int nx = getCell_x(b.px);
-        int ny = getCell_y(b.py);
-        if (nx != cx || ny != cy) {
-            cellsArr[nx][ny].boids.push_back(&b);
-            it = cellsArr[cx][cy].boids.erase(it);
+        int ni = getCell_i(b.px, b.py);
+        if (ni != ci) {
+            cellsArr[ni].boids.push_back(&b);
+            it = cellsArr[ci].boids.erase(it);
         }
     }
 }
 
-void updateCells(Cell cellsArr[numCells_x][numCells_y])
+void updateCells(Cell cellsArr[])
 {
     // TODO could potentially be faster if we fed a lookup table to the functions
     for(int x=0; x<numCells_x; x++) {
@@ -341,7 +353,7 @@ int main() {
         return 1;
     }
 
-    Cell cellsArr[numCells_x][numCells_y];
+    Cell cellsArr[numCells_x * numCells_y];
 
     // Initialise array of boids
     Boid arr[numParticles];
@@ -355,10 +367,10 @@ int main() {
         arr[i] = Boid(px, py, vx, vy);
 
         //Add pointer to boid to cell
-        cellsArr[getCell_x(px)][getCell_y(py)].boids.push_back(&arr[i]);
+        cellsArr[getCell_i(px, py)].boids.push_back(&arr[i]);
     }
 
-    save(fptr, arr, numParticles, 0);
+    save(fptr, cellsArr, numParticles, 0);
 
 
 
@@ -367,7 +379,7 @@ int main() {
         // For each cell update each boid inside
         updateCells(cellsArr);
         
-        save(fptr, arr, numParticles, frame);
+        save(fptr, cellsArr, numParticles, frame);
     }
 
 
