@@ -63,11 +63,11 @@ int main()
     }
 
     // Column headings
-    fprintf(fptr, "N, Time (ms)\n");
+    fprintf(fptr, "N, Time (us)\n");
 
 
     // Do the profiling
-    for (int N = 1; N < 100001; N *= 10) {
+    for (int N = 1; N < 10001; N *= 10) {
         ProfileAt(N, fptr);
         ProfileAt(N * 10 * pow(10, 0.25), fptr);
         ProfileAt(N * 10 * pow(10, 0.5), fptr);
