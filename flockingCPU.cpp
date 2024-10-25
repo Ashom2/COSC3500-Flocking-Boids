@@ -329,7 +329,7 @@ void updateCell(Cell cellsArr[], int cx, int cy) {
     }
 }
 
-void updateCells(Cell cellsArr[])
+void updateFrame(Cell cellsArr[])
 {
     // TODO could potentially be faster if we fed a lookup table to the functions
     for(int x=0; x<numCells_x; x++) {
@@ -375,7 +375,7 @@ int main() {
     // Update boids
     for (int frame=1; frame<numFrames; frame++) {
         // For each cell update each boid inside
-        updateCells(cellsArr);
+        updateFrame(cellsArr);
         
         save(fptr, arr, numParticles, frame);
     }
