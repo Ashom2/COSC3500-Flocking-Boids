@@ -370,7 +370,7 @@ int main() {
 
     save(fptr, arr, numParticles, 0);
 
-
+    
 
     // Update boids
     for (int frame=1; frame<numFrames; frame++) {
