@@ -10,8 +10,6 @@ int leftMargin = 64;
 int rightMargin = xSize - 64;
 int bottomMargin = 64;
 int topMargin = ySize - 64;
-const int numBoids = 1000;
-const int numFrames = 300;
 
 const char *filepath = "data.txt";
 
@@ -351,7 +349,7 @@ Boid* initBoids(int numBoids)
     return boidsArray;
 }
 
-Cell* initCells(Boid* boidsArray, Cell* cellsArray)
+Cell* initCells(int numBoids, Boid* boidsArray, Cell* cellsArray)
 {
     for(int i = 0; i < numBoids; i++) {
         //Add pointer to boid to cell
@@ -364,6 +362,9 @@ Cell* initCells(Boid* boidsArray, Cell* cellsArray)
 Main.
 */
 int main() {
+    int numBoids = 1000;
+    int numFrames = 300;
+
     // Create a file and open it for writing
     FILE *fptr;
     fptr = fopen(filepath, "w");
@@ -375,7 +376,7 @@ int main() {
     // Initialise arrays
     Boid* boidsArray = initBoids(numBoids);
     Cell cellsArray[numCells_x * numCells_y];
-    initCells(boidsArray, cellsArray);    
+    initCells(numBoids, boidsArray, cellsArray);    
 
     save(fptr, boidsArray, numBoids, 0);
 
