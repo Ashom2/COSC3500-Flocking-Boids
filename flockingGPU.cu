@@ -334,7 +334,7 @@ __global__ void updateBoidsKernel_GPU(int N, const Boid* in, Boid* out)
 
 
 
-__host__ void updateBoids_GPU(int N, const Boid* in, Boid* out)
+__host__ void updateBoids_GPU(int N)
 {
     //TODO is it possible to use a single pointer??
 
@@ -347,7 +347,7 @@ __host__ void updateBoids_GPU(int N, const Boid* in, Boid* out)
     cudaMalloc(&deviceOut, size);
 
     //Copy memory from host to device
-    cudaMemcpy(deviceIn, in, size, cudaMemcpyHostToDevice);
+    cudaMemcpy(deviceIn, boidsArray, size, cudaMemcpyHostToDevice);
     //cudaMemcpy(deviceOut, out, size, cudaMemcpyHostToDevice);
 
     //Specify blocks and threads
@@ -355,11 +355,10 @@ __host__ void updateBoids_GPU(int N, const Boid* in, Boid* out)
     dim3 blocks((N + BLOCKSIZE - 1) / BLOCKSIZE, 1); //Ceil division of N / BLOCKSIZE
 
     //Run
-    printf("running kernel\n");
     updateBoidsKernel_GPU<<<blocks, threads>>>(N, deviceIn, deviceOut);
 
     //Copy memory from device to host
-    cudaMemcpy(out, deviceOut, size, cudaMemcpyDeviceToHost);
+    cudaMemcpy(boidsArray, deviceOut, size, cudaMemcpyDeviceToHost);
 
     //Clean up
     cudaFree(deviceIn);
@@ -413,10 +412,7 @@ int main()
 
     // Update boids
     for (int frame = 1; frame < numFrames; frame++) {
-        Boid* out = (Boid*)malloc(numBoids * sizeof(Boid));
-        updateBoids_GPU(numBoids, boidsArray, out);
-        memcpy(boidsArray, out, sizeof(boidsArray));
-        printf("Frame %d complete\n", frame);
+        updateBoids_GPU(numBoids);
         
         save(fptr, numBoids, frame);
     }
