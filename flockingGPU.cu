@@ -370,7 +370,7 @@ __host__ void updateBoids_GPU(int N, const Boid* in, Boid* out)
 
 void init(int numBoids)
 {
-    Boid* boidsArray = (Boid*)malloc(numBoids * sizeof(Boid));
+    boidsArray = (Boid*)malloc(numBoids * sizeof(Boid));
 
     // Initialise array of boids and assign them to cells
     for(int i = 0; i < numBoids; i++) {
