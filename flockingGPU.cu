@@ -8,22 +8,26 @@
 
 const float PI = 3.141592653589793238462643383279502884;
 
-__device__ int leftMargin;
-__device__ int rightMargin;
-__device__ int bottomMargin;
-__device__ int topMargin;
 const int numBoids = 100;
-
 const char *filepath = "test data.txt";
+
+int xSize = 512;
+int ySize = 512;
+__device__ int leftMargin = 64;
+__device__ int rightMargin = 448;
+__device__ int bottomMargin = 64;
+__device__ int topMargin = 448;
 
 // How hard the boid can turn to avoid walls
 __device__ float turnFactor = 0.2;
 // The distance within which separation occurs
 float avoidRange = 8;
+__device__ float sqrAvoidRange = 64;
 // The rate at which separation occurs
 __device__ float avoidFactor = 0.15;
 // The distance within which alignment occurs
 float visualRange = 20;
+__device__ float sqrVisualRange = 400;
 // The rate at which alignment occurs
 __device__ float matchingFactor = 0.05;
 // The rate at which cohesion occurs
@@ -43,13 +47,20 @@ __device__ float formationAngle = 0.7 * PI;
 // const int numCells_x = 16;
 // const int numCells_y = 16;
 
-__device__ float sqrAvoidRange;
-__device__ float sqrVisualRange;
 
 
-//TODO test this works
-void setVars(int _xSize, int _ySize, int _marginSize, float _avoidRange, float _visualRange)
+
+void setVars(int _xSize, int _ySize, int _marginSize, 
+        float _turnFactor, 
+        float _avoidRange, float _avoidFactor,
+        float _visualRange, float _matchingFactor,
+        float _cohesionFactor,
+        float _minSpeed, float _maxSpeed,
+        float _formationAngle)
 {
+    xSize = _xSize;
+    ySize = _ySize;
+
     int _leftMargin = _marginSize;
     cudaMemcpyToSymbol(leftMargin, &_leftMargin, sizeof(int), 0, cudaMemcpyHostToDevice);
     int _rightMargin = _xSize - _marginSize;
@@ -59,10 +70,22 @@ void setVars(int _xSize, int _ySize, int _marginSize, float _avoidRange, float _
     int _topMargin = _ySize - _marginSize;
     cudaMemcpyToSymbol(topMargin, &_topMargin, sizeof(int), 0, cudaMemcpyHostToDevice);
 
+    cudaMemcpyToSymbol(turnFactor, &_turnFactor, sizeof(float), 0, cudaMemcpyHostToDevice);
+
     float _sqrAvoidRange = _avoidRange * _avoidRange;
     cudaMemcpyToSymbol(sqrAvoidRange, &_sqrAvoidRange, sizeof(float), 0, cudaMemcpyHostToDevice);
+    cudaMemcpyToSymbol(avoidFactor, &_avoidFactor, sizeof(float), 0, cudaMemcpyHostToDevice);
+
     float _sqrVisualRange = _visualRange * _visualRange;
     cudaMemcpyToSymbol(sqrVisualRange, &_sqrVisualRange, sizeof(float), 0, cudaMemcpyHostToDevice);
+    cudaMemcpyToSymbol(matchingFactor, &_matchingFactor, sizeof(float), 0, cudaMemcpyHostToDevice);
+
+    cudaMemcpyToSymbol(cohesionFactor, &_cohesionFactor, sizeof(float), 0, cudaMemcpyHostToDevice);
+
+    cudaMemcpyToSymbol(minSpeed, &_minSpeed, sizeof(float), 0, cudaMemcpyHostToDevice);
+    cudaMemcpyToSymbol(maxSpeed, &_maxSpeed, sizeof(float), 0, cudaMemcpyHostToDevice);
+
+    cudaMemcpyToSymbol(formationAngle, &_formationAngle, sizeof(float), 0, cudaMemcpyHostToDevice);    
 }
 
 
@@ -311,11 +334,6 @@ __global__ void updateBoidsKernel_GPU(int N, const Boid* in, Boid* out)
 __host__ void updateBoids_GPU(int N, const Boid* in, Boid* out)
 {
     //TODO is it possible to use a single pointer??
-    printf("update: %f %f\n", in[0].px, in[0].py);
-
-    // Precalculated constants
-    float sqrAvoidRange = avoidRange * avoidRange;
-    float sqrVisualRange = visualRange * visualRange;
 
     size_t size = N * sizeof(Boid);
 
@@ -342,8 +360,6 @@ __host__ void updateBoids_GPU(int N, const Boid* in, Boid* out)
     //Clean up
     cudaFree(deviceIn);
     cudaFree(deviceOut);
-
-    printf("out: %f %f\n", out[0].px, out[0].py);
 }
 
 
@@ -375,13 +391,8 @@ int main()
     }
 
 
-
     //Variables for main
-    int xSize = 512;
-    int ySize = 512;
-    float minSpeed = 1;
-
-    setVars(xSize, ySize, 64, avoidRange, visualRange);
+    setVars(512, 512, 64, 0.2, 8, 0.15, 20, 0.05, 0.2, 1, 2, 0.7 * PI);
 
 
 
@@ -391,11 +402,10 @@ int main()
         float py = randFloat(0, ySize);
         // Random normalised direction
         float randTheta = randFloat(0, 2 * PI);
-        float vx = cos(randTheta) * minSpeed;
-        float vy = sin(randTheta) * minSpeed;
+        float vx = cos(randTheta) * 1.0;
+        float vy = sin(randTheta) * 1.0;
         arr[i] = Boid(px, py, vx, vy);
     }
-    //init(512, 512, 2.0, arr);
 
     save(fptr, arr, numBoids, 0);
 
