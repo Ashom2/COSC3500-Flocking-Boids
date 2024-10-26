@@ -8,8 +8,7 @@
 
 const float PI = 3.141592653589793238462643383279502884;
 
-const int numBoids = 100;
-const char *filepath = "test data.txt";
+const char *filepath = "data.txt";
 
 int xSize = 512;
 int ySize = 512;
@@ -46,6 +45,8 @@ __device__ float formationAngle = 0.7 * PI;
 // const int numCells_y = ySize / cellSize;
 // const int numCells_x = 16;
 // const int numCells_y = 16;
+
+
 
 
 
@@ -115,6 +116,8 @@ class Boid {
         }
 };
 
+Boid* boidsArray;
+
 
 
 /*
@@ -129,11 +132,11 @@ struct Cell {
 /*
 Saves 
 */
-void save(FILE *fptr, Boid arr[], int numBoids, int frameNumber) {
+void save(FILE *fptr, int numBoids, int frameNumber) {
     // Write vector array to file
     fprintf(fptr, "Frame %d\n", frameNumber);
-    for(int i=0; i<numBoids; i++) {
-        fprintf(fptr, "%f %f %f %f\n", arr[i].px, arr[i].py, arr[i].vx, arr[i].vy);
+    for(int i = 0; i < numBoids; i++) {
+        fprintf(fptr, "%f %f %f %f\n", boidsArray[i].px, boidsArray[i].py, boidsArray[i].vx, boidsArray[i].vy);
     }    
 }
 
@@ -352,6 +355,7 @@ __host__ void updateBoids_GPU(int N, const Boid* in, Boid* out)
     dim3 blocks((N + BLOCKSIZE - 1) / BLOCKSIZE, 1); //Ceil division of N / BLOCKSIZE
 
     //Run
+    printf("running kernel\n");
     updateBoidsKernel_GPU<<<blocks, threads>>>(N, deviceIn, deviceOut);
 
     //Copy memory from device to host
@@ -364,17 +368,19 @@ __host__ void updateBoids_GPU(int N, const Boid* in, Boid* out)
 
 
 
-void init(int xSize, int ySize, float minSpeed, Boid* arr)
+void init(int numBoids)
 {
+    Boid* boidsArray = (Boid*)malloc(numBoids * sizeof(Boid));
+
     // Initialise array of boids and assign them to cells
-    for(int i=0; i<numBoids; i++) {
+    for(int i = 0; i < numBoids; i++) {
         float px = randFloat(0, xSize);
         float py = randFloat(0, ySize);
         // Random normalised direction
         float randTheta = randFloat(0, 2 * PI);
-        float vx = cos(randTheta) * minSpeed;
-        float vy = sin(randTheta) * minSpeed;
-        arr[i] = Boid(px, py, vx, vy);
+        float vx = cos(randTheta) * 1.0;
+        float vy = sin(randTheta) * 1.0;
+        boidsArray[i] = Boid(px, py, vx, vy);
     }
 }
 
@@ -382,6 +388,10 @@ void init(int xSize, int ySize, float minSpeed, Boid* arr)
 
 int main()
 {
+    int numBoids = 1000;
+    int numFrames = 300;
+
+
     // Create a file and open it for writing
     FILE *fptr;
     fptr = fopen(filepath, "w");
@@ -394,30 +404,21 @@ int main()
     //Variables for main
     setVars(512, 512, 64, 0.2, 8, 0.15, 20, 0.05, 0.2, 1, 2, 0.7 * PI);
 
+    init(numBoids);
+    printf("Init complete\n");
 
-
-    Boid arr[numBoids];
-    for(int i=0; i<numBoids; i++) {
-        float px = randFloat(0, xSize);
-        float py = randFloat(0, ySize);
-        // Random normalised direction
-        float randTheta = randFloat(0, 2 * PI);
-        float vx = cos(randTheta) * 1.0;
-        float vy = sin(randTheta) * 1.0;
-        arr[i] = Boid(px, py, vx, vy);
-    }
-
-    save(fptr, arr, numBoids, 0);
+    save(fptr, numBoids, 0);
 
 
 
     // Update boids
-    for (int frame=1; frame<100; frame++) {
+    for (int frame = 1; frame < numFrames; frame++) {
         Boid* out = (Boid*)malloc(numBoids * sizeof(Boid));
-        updateBoids_GPU(numBoids, arr, out);
-        memcpy(arr, out, sizeof(arr));
+        updateBoids_GPU(numBoids, boidsArray, out);
+        memcpy(boidsArray, out, sizeof(boidsArray));
+        printf("Frame %d complete\n", frame);
         
-        save(fptr, arr, numBoids, frame);
+        save(fptr, numBoids, frame);
     }
 
 
