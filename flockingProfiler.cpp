@@ -2,6 +2,7 @@
 #include <chrono>
 
 #include "flockingCPU.h"
+#include "flockingGPU.cuh"
 
 //Must be compiled with flockingCPU.cpp
 //To run do:
@@ -9,7 +10,7 @@
 //Or
 //Use the makefile / slurm script
 
-const char *profilingFilepath = "ProfilingData.csv";
+const char *profilingFilepath = "Analysis/ProfilingData.csv";
 
 /*
 Saves 
@@ -32,7 +33,8 @@ void save(FILE *fptr, int number, double time1) {
 const int numCells_x = 16;
 const int numCells_y = 16;
 
-void ProfileAt(int N, FILE* fptr)
+//For CPU
+/*void ProfileAt(int N, FILE* fptr)
 {
     //Initialize arrays
     Boid* boidsArray = initBoids(N);
@@ -44,6 +46,31 @@ void ProfileAt(int N, FILE* fptr)
 
     // Do function
     updateFrame(cellsArray);
+
+    // End timing
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::micro> duration_us = end - start;
+
+    printf("N: %d. Time taken: %g us\n", N, duration_us.count());
+
+    save(fptr, N, duration_us.count());
+}*/
+
+
+
+//For GPU
+void ProfileAt(int N, FILE* fptr)
+{
+    //Initialize arrays
+    setVars(512, 512, 64, 0.2, 8, 0.15, 20, 0.05, 0.2, 1, 2, 0.7 * 3.14);
+    init(N);
+    
+
+    // Begin timing
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Do function
+    updateBoids_GPU(N);
 
     // End timing
     auto end = std::chrono::high_resolution_clock::now();
