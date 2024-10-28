@@ -207,7 +207,7 @@ __device__ void getOrthogonal(float &orthogonalVector_x, float &orthogonalVector
 
 
 //Using shared memory
-__global__ void updateBoidsKernel_GPU(int N, const Boid* in, Boid* out)
+__global__ void updateBoidsKernel_GPU(int N, Boid* in, Boid* out)
 {
     //This boid's index
     int thisIndex = blockIdx.x * blockDim.x + threadIdx.x;
@@ -219,13 +219,14 @@ __global__ void updateBoidsKernel_GPU(int N, const Boid* in, Boid* out)
         float formationPos_x = 0, formationPos_y = 0;
         int neighboringBoids = 0;
 
+        //For some reason Boid& o = in[otherIndex]; seems to make it faster but making this line a reference makes it slower
         Boid b = in[thisIndex];
 
         for (int otherIndex = 0; otherIndex < N; otherIndex++) {
             if (otherIndex == thisIndex) continue; //Ignore itself
 
-            Boid o = in[otherIndex];
-
+            Boid& o = in[otherIndex];
+        
             // Get the distance between this boid and other boid
             float sqrDist = sqrMag(b.px - o.px, b.py - o.py);
             if (sqrDist < sqrAvoidRange) { // If the distance is less than protected range
@@ -240,16 +241,15 @@ __global__ void updateBoidsKernel_GPU(int N, const Boid* in, Boid* out)
                 formationPos_y += o.py;
                 neighboringBoids++;
             }
-
         }
 
         //Make a copy for out
-        //TODO make a pointer named bOut
-        out[thisIndex] = b;
+        Boid& bOut = out[thisIndex]; //Reference to out[thisIndex]
+        bOut = b;
 
         // Separation - move away from nearby boids
-        out[thisIndex].vx += avoidVector_x * avoidFactor;
-        out[thisIndex].vy += avoidVector_y * avoidFactor;
+        bOut.vx += avoidVector_x * avoidFactor;
+        bOut.vy += avoidVector_y * avoidFactor;
 
         if (neighboringBoids > 0) { //If there were any boids in visual range
             // Get mean formation direction and position
@@ -259,37 +259,37 @@ __global__ void updateBoidsKernel_GPU(int N, const Boid* in, Boid* out)
             formationPos_y /= neighboringBoids;  
 
             // Alignment - match the mean velocity of all boids in visual range
-            out[thisIndex].vx += (formationDir_x - out[thisIndex].vx) * matchingFactor;
-            out[thisIndex].vy += (formationDir_y - out[thisIndex].vy) * matchingFactor;
+            bOut.vx += (formationDir_x - bOut.vx) * matchingFactor;
+            bOut.vy += (formationDir_y - bOut.vy) * matchingFactor;
 
             // Flocking
             // Represents a vector pointed dowards this boid from the centre of mass
-            float diffVector_x = out[thisIndex].px - formationPos_x;
-            float diffVector_y = out[thisIndex].py - formationPos_y;
+            float diffVector_x = bOut.px - formationPos_x;
+            float diffVector_y = bOut.py - formationPos_y;
 
             float orthogonalVector_x = 0, orthogonalVector_y = 0;
             getOrthogonal(orthogonalVector_x, orthogonalVector_y, 
                     diffVector_x, diffVector_y,
                     formationDir_x, formationDir_y);
 
-            out[thisIndex].vx += orthogonalVector_x * cohesionFactor;
-            out[thisIndex].vy += orthogonalVector_y * cohesionFactor;            
+            bOut.vx += orthogonalVector_x * cohesionFactor;
+            bOut.vy += orthogonalVector_y * cohesionFactor;            
         }
 
 
 
         // Avoid edges
-        if (out[thisIndex].px < leftMargin) {
-            out[thisIndex].vx += turnFactor;
+        if (bOut.px < leftMargin) {
+            bOut.vx += turnFactor;
         }
-        else if (out[thisIndex].px > rightMargin) {
-            out[thisIndex].vx -= turnFactor;
+        else if (bOut.px > rightMargin) {
+            bOut.vx -= turnFactor;
         }
-        if (out[thisIndex].py < bottomMargin) {
-            out[thisIndex].vy += turnFactor;
+        if (bOut.py < bottomMargin) {
+            bOut.vy += turnFactor;
         }
-        else if (out[thisIndex].py > topMargin) {
-            out[thisIndex].vy -= turnFactor;
+        else if (bOut.py > topMargin) {
+            bOut.vy -= turnFactor;
         }
         //---------------------------------------
 
@@ -297,25 +297,25 @@ __global__ void updateBoidsKernel_GPU(int N, const Boid* in, Boid* out)
 
         // Impose speed limit on boid
         //TODO use *= and precalculate maxSpeed / speed
-        float speed = mag(out[thisIndex].vx, out[thisIndex].vy);
+        float speed = mag(bOut.vx, bOut.vy);
         if (speed > maxSpeed) {
-            out[thisIndex].vx *= maxSpeed / speed;
-            out[thisIndex].vy *= maxSpeed / speed;
+            bOut.vx *= maxSpeed / speed;
+            bOut.vy *= maxSpeed / speed;
         }
         else if (speed == 0) {
             // TODO
         }
         else if (speed < minSpeed) {
-            out[thisIndex].vx *= minSpeed / speed;
-            out[thisIndex].vy *= minSpeed / speed;
+            bOut.vx *= minSpeed / speed;
+            bOut.vy *= minSpeed / speed;
         }
         //---------------------------------------
 
         
         
         // Update boid position
-        out[thisIndex].px += out[thisIndex].vx;
-        out[thisIndex].py += out[thisIndex].vy;
+        bOut.px += bOut.vx;
+        bOut.py += bOut.vy;
         //---------------------------------------
     }
 }
@@ -371,7 +371,7 @@ void init(int numBoids)
 }
 
 
-/*
+
 int main()
 {
     int numBoids = 1000;
@@ -413,4 +413,3 @@ int main()
 
     return 0;
 }
-*/
