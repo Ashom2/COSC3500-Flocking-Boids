@@ -10,7 +10,7 @@
 //Or
 //Use the makefile / slurm script
 
-const char *profilingFilepath = "Analysis/ProfilingData.csv";
+const char *profilingFilepath = "ProfilingData.csv";
 
 /*
 Saves 
@@ -65,7 +65,6 @@ void ProfileAt(int N, FILE* fptr)
     setVars(512, 512, 64, 0.2, 8, 0.15, 20, 0.05, 0.2, 1, 2, 0.7 * 3.14);
     init(N);
     
-
     // Begin timing
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -81,6 +80,8 @@ void ProfileAt(int N, FILE* fptr)
     save(fptr, N, duration_us.count());
 }
 
+
+
 int main()
 {
     // Create a file and open it for writing
@@ -94,8 +95,11 @@ int main()
     // Column headings
     fprintf(fptr, "N, Time (us)\n");
 
+    
+
+    //Logarithmic profiling
+    /*
     int max = 10000;
-    // Do the profiling
     for (int N = 1; N < max; N *= 10) {
         ProfileAt(N, fptr);
         ProfileAt(N * pow(10, 0.25), fptr);
@@ -103,6 +107,14 @@ int main()
         ProfileAt(N * pow(10, 0.75), fptr);
     }
     ProfileAt(max, fptr);
+    */
+
+    //Linear profiling
+    int max = 1000000;
+    int step = 2500;
+    for (int N = step; N <= max; N += step) {
+        ProfileAt(N, fptr);
+    }
 
     // Close the file
     fclose(fptr);
