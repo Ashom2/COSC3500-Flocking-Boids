@@ -1,10 +1,6 @@
-#include <stdio.h>
-#include <stdarg.h>
-#include <list>
-#include <math.h>
-#include <vector_types.h>//allows the use of composite types, e.g. float2, float3, int3, etc.
+#include "flockingGPU.cuh"
 
-#define BLOCKSIZE 32
+#define BLOCKSIZE 512
 
 const float PI = 3.141592653589793238462643383279502884;
 
@@ -214,15 +210,7 @@ __device__ void getOrthogonal(float &orthogonalVector_x, float &orthogonalVector
 __global__ void updateBoidsKernel_GPU(int N, const Boid* in, Boid* out)
 {
     //This boid's index
-    //for 1D
-    int thisIndex = blockIdx.x * (blockDim.x * blockDim.y) + threadIdx.y * blockDim.x + threadIdx.x; 
-
-    //printf("kernel: %f %f\n", out[0].px, out[0].py);
-    //printf("%f %f %f %f\n", in[thisIndex].px, in[thisIndex].py, in[thisIndex].vx, in[thisIndex].vy);
-    //for 2D
-    // int x = blockIdx.x * blockDim.x + threadIdx.x;
-    // int y = blockIdx.y * blockDim.y + threadIdx.y;
-    // int thisIndex = x + (blockDim.x * gridDim.x) * y;
+    int thisIndex = blockIdx.x * blockDim.x + threadIdx.x;
 
 
     if (thisIndex < N) { //Check out of bounds
@@ -348,14 +336,13 @@ __host__ void updateBoids_GPU(int N)
 
     //Copy memory from host to device
     cudaMemcpy(deviceIn, boidsArray, size, cudaMemcpyHostToDevice);
-    //cudaMemcpy(deviceOut, out, size, cudaMemcpyHostToDevice);
 
-    //Specify blocks and threads
-    dim3 threads(BLOCKSIZE, BLOCKSIZE);
-    dim3 blocks((N + BLOCKSIZE - 1) / BLOCKSIZE, 1); //Ceil division of N / BLOCKSIZE
-
+    //Specify blocks and threads, using 1D threads and blocks since our data is 1D
+    int threadsPerBlock = BLOCKSIZE;
+    int numBlocks = (N + threadsPerBlock - 1) / threadsPerBlock; //Int division of N / threadsPerBlock
+    
     //Run
-    updateBoidsKernel_GPU<<<blocks, threads>>>(N, deviceIn, deviceOut);
+    updateBoidsKernel_GPU<<<numBlocks, threadsPerBlock>>>(N, deviceIn, deviceOut);
 
     //Copy memory from device to host
     cudaMemcpy(boidsArray, deviceOut, size, cudaMemcpyDeviceToHost);
@@ -384,7 +371,7 @@ void init(int numBoids)
 }
 
 
-
+/*
 int main()
 {
     int numBoids = 1000;
@@ -426,3 +413,4 @@ int main()
 
     return 0;
 }
+*/
