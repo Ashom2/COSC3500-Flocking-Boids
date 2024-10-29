@@ -302,13 +302,11 @@ __global__ void updateBoidsKernel_GPU(int N, Boid* in, Boid* out)
             bOut.vx *= maxSpeed / speed;
             bOut.vy *= maxSpeed / speed;
         }
-        else if (speed == 0) {
-            // TODO
-        }
         else if (speed < minSpeed) {
             bOut.vx *= minSpeed / speed;
             bOut.vy *= minSpeed / speed;
         }
+        //else if (speed == 0) {// TODO
         //---------------------------------------
 
         
@@ -322,10 +320,8 @@ __global__ void updateBoidsKernel_GPU(int N, Boid* in, Boid* out)
 
 
 
-__host__ void updateBoids_GPU(int N)
+__host__ float updateBoids_GPU(int N)
 {
-    //TODO is it possible to use a single pointer??
-
     size_t size = N * sizeof(Boid);
 
     //Allocate memory on the device
@@ -340,9 +336,27 @@ __host__ void updateBoids_GPU(int N)
     //Specify blocks and threads, using 1D threads and blocks since our data is 1D
     int threadsPerBlock = BLOCKSIZE;
     int numBlocks = (N + threadsPerBlock - 1) / threadsPerBlock; //Int division of N / threadsPerBlock
+
+    cudaEvent_t startGPU;
+    cudaEvent_t stopGPU;
+    cudaEventCreate(&startGPU);
+    cudaEventCreate(&stopGPU);
+    //Start Timer
+    cudaEventRecord(startGPU);
     
     //Run
     updateBoidsKernel_GPU<<<numBlocks, threadsPerBlock>>>(N, deviceIn, deviceOut);
+
+    //Mark end of kernel execution
+    cudaEventRecord(stopGPU);
+    //Wait for results to be available
+    cudaEventSynchronize(stopGPU);   
+    //Measure the time the kernel took to execute
+    float kernelTime;
+    cudaEventElapsedTime(&kernelTime, startGPU, stopGPU);
+
+    //Wait for the kernel to synchronise
+    cudaDeviceSynchronize();
 
     //Copy memory from device to host
     cudaMemcpy(boidsArray, deviceOut, size, cudaMemcpyDeviceToHost);
@@ -350,6 +364,8 @@ __host__ void updateBoids_GPU(int N)
     //Clean up
     cudaFree(deviceIn);
     cudaFree(deviceOut);
+
+    return kernelTime * 1000;
 }
 
 
@@ -371,7 +387,7 @@ void init(int numBoids)
 }
 
 
-
+/*
 int main()
 {
     int numBoids = 1000;
@@ -391,7 +407,6 @@ int main()
     setVars(512, 512, 64, 0.2, 8, 0.15, 20, 0.05, 0.2, 1, 2, 0.7 * PI);
 
     init(numBoids);
-    printf("Init complete\n");
 
     save(fptr, numBoids, 0);
 
@@ -413,3 +428,4 @@ int main()
 
     return 0;
 }
+*/
