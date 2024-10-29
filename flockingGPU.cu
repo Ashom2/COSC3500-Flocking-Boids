@@ -112,7 +112,7 @@ class Boid {
         }
 };
 
-Boid* boidsArray;
+Boid* boidsArrayHost;
 
 
 
@@ -132,7 +132,7 @@ void save(FILE *fptr, int numBoids, int frameNumber) {
     // Write vector array to file
     fprintf(fptr, "Frame %d\n", frameNumber);
     for(int i = 0; i < numBoids; i++) {
-        fprintf(fptr, "%f %f %f %f\n", boidsArray[i].px, boidsArray[i].py, boidsArray[i].vx, boidsArray[i].vy);
+        fprintf(fptr, "%f %f %f %f\n", boidsArrayHost[i].px, boidsArrayHost[i].py, boidsArrayHost[i].vx, boidsArrayHost[i].vy);
     }    
 }
 
@@ -211,7 +211,6 @@ __global__ void updateBoidsKernel_GPU(int N, Boid* in, Boid* out)
 {
     //This boid's index
     int thisIndex = blockIdx.x * blockDim.x + threadIdx.x;
-
 
     if (thisIndex < N) { //Check out of bounds
         float avoidVector_x = 0, avoidVector_y = 0;
@@ -296,7 +295,6 @@ __global__ void updateBoidsKernel_GPU(int N, Boid* in, Boid* out)
 
 
         // Impose speed limit on boid
-        //TODO use *= and precalculate maxSpeed / speed
         float speed = mag(bOut.vx, bOut.vy);
         if (speed > maxSpeed) {
             bOut.vx *= maxSpeed / speed;
@@ -306,7 +304,7 @@ __global__ void updateBoidsKernel_GPU(int N, Boid* in, Boid* out)
             bOut.vx *= minSpeed / speed;
             bOut.vy *= minSpeed / speed;
         }
-        //else if (speed == 0) {// TODO
+        //else if (speed == 0) {} // TODO
         //---------------------------------------
 
         
@@ -331,7 +329,7 @@ __host__ float updateBoids_GPU(int N)
     cudaMalloc(&deviceOut, size);
 
     //Copy memory from host to device
-    cudaMemcpy(deviceIn, boidsArray, size, cudaMemcpyHostToDevice);
+    cudaMemcpy(deviceIn, boidsArrayHost, size, cudaMemcpyHostToDevice);
 
     //Specify blocks and threads, using 1D threads and blocks since our data is 1D
     int threadsPerBlock = BLOCKSIZE;
@@ -359,7 +357,7 @@ __host__ float updateBoids_GPU(int N)
     cudaDeviceSynchronize();
 
     //Copy memory from device to host
-    cudaMemcpy(boidsArray, deviceOut, size, cudaMemcpyDeviceToHost);
+    cudaMemcpy(boidsArrayHost, deviceOut, size, cudaMemcpyDeviceToHost);
 
     //Clean up
     cudaFree(deviceIn);
@@ -372,7 +370,7 @@ __host__ float updateBoids_GPU(int N)
 
 void init(int numBoids)
 {
-    boidsArray = (Boid*)malloc(numBoids * sizeof(Boid));
+    boidsArrayHost = (Boid*)malloc(numBoids * sizeof(Boid));
 
     // Initialise array of boids and assign them to cells
     for(int i = 0; i < numBoids; i++) {
@@ -382,7 +380,7 @@ void init(int numBoids)
         float randTheta = randFloat(0, 2 * PI);
         float vx = cos(randTheta) * 1.0;
         float vy = sin(randTheta) * 1.0;
-        boidsArray[i] = Boid(px, py, vx, vy);
+        boidsArrayHost[i] = Boid(px, py, vx, vy);
     }
 }
 
