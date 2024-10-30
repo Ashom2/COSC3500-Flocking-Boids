@@ -149,6 +149,7 @@ uint* cellSizesHost;
 
 void freeMemory() {
     free(boidsArrayHost);
+    for(int i = 0; i < numCells_x * numCells_y; i++) free(cellsArrayHost[i]);
     free(cellsArrayHost);
     free(cellOffsetsHost);
     free(cellSizesHost);
@@ -369,7 +370,6 @@ void assignBoidsToCells(int numBoids)
 {
     //Reset cells
     for(int i = 0; i < numCells_x * numCells_y; i++) {
-        free(cellsArrayHost[i]);
         cellsArrayHost[i] = (Boid*)malloc(0);
         cellSizesHost[i] = 0;
         cellOffsetsHost[i] = 0;
@@ -483,7 +483,7 @@ void init(int numBoids)
 }
 
 
-
+/*
 int main()
 {
     int numBoids = 1000;
@@ -527,3 +527,4 @@ int main()
 
     return 0;
 }
+*/
