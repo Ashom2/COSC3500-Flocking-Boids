@@ -374,13 +374,26 @@ void assignBoidsToCells(int numBoids)
         cellSizesHost[i] = 0;
         cellOffsetsHost[i] = 0;
     }
-    //Assign boids to cells
+
+    //Determine cell sizes
     for(int i = 0; i < numBoids; i++) {
         Boid& b = boidsArrayHost[i];
         b.cellIndex = getCell_i(b.px, b.py); //TODO dont calculate this here
+        //increase cell size
+        cellSizesHost[b.cellIndex]++;
+    }
+
+    //Reallocate memory
+    for(int i = 0; i < numCells_x * numCells_y; i++) {
+        cellsArrayHost[i] = (Boid*)realloc(cellsArrayHost[i], cellSizesHost[i] * sizeof(Boid));
+        cellSizesHost[i] = 0; //Reset to 0 so we can use as an incrementer
+    }
+
+    //Put boids in cells
+    for(int i = 0; i < numBoids; i++) {
+        Boid& b = boidsArrayHost[i];
         //Allocate boid to a cell in cellsArrayHost
-        cellsArrayHost[b.cellIndex] = (Boid*)realloc(cellsArrayHost[b.cellIndex], ++cellSizesHost[b.cellIndex] * sizeof(Boid));
-        cellsArrayHost[b.cellIndex][cellSizesHost[b.cellIndex] - 1] = b;
+        cellsArrayHost[b.cellIndex][cellSizesHost[b.cellIndex]++] = b;
     }
 }
 
@@ -391,8 +404,12 @@ __host__ float updateBoids_GPU(int N)
     size_t size1 = N * sizeof(Boid);
     size_t size2 = numCells_x * numCells_y * sizeof(uint);
     
+    auto start = std::chrono::high_resolution_clock::now();
+
     //Recalculate which cells have which boids
     assignBoidsToCells(N);
+
+    
 
     //flatten cells array so we can put it onto the kernel
     Boid* flattenedCellsArray = (Boid*)malloc(size1);
@@ -404,6 +421,11 @@ __host__ float updateBoids_GPU(int N)
         }
         indexOffset += cellSizesHost[i];
     }
+
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::micro> duration_us = end - start;
+    printf("N: %d. ------------- CPU Time taken: %g us.\n", N, duration_us.count());
 
     //Allocate memory on the device
     Boid* deviceCells;
