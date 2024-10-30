@@ -35,12 +35,14 @@ __device__ float maxSpeed = 2;
 __device__ float formationAngle = 0.7 * PI;
 
 // Calculate cell size
+float cellSize = 32;
+int numCells_x = 16;
+int numCells_y = 16;
+__device__ int deviceNumCells_x = 16;
+__device__ int deviceNumCells_y = 16;
 //const int cellSize = pow(2, ceil(log2(std::max(avoidRange, visualRange))));
 // I failed to implement this using constexpr so you (the user) must compute manually
-// const int numCells_x = xSize / cellSize;
-// const int numCells_y = ySize / cellSize;
-// const int numCells_x = 16;
-// const int numCells_y = 16;
+
 
 
 
@@ -88,6 +90,37 @@ void setVars(int _xSize, int _ySize, int _marginSize,
 
 
 /*
+Retrieves the x index of a cell at position x
+*/
+int getCell_x(float x) {
+    int nx = (int)(x / cellSize);
+    //clamp
+    if (nx > numCells_x - 1) return numCells_x - 1;
+    if (nx < 0) return 0;
+    return nx;
+}
+
+/*
+Retrieves the y index of a cell at position y
+*/
+int getCell_y(float y) {
+    int ny = (int)(y / cellSize);
+    //clamp
+    if (ny > numCells_y - 1) return numCells_y - 1;
+    if (ny < 0) return 0;
+    return ny;
+}
+
+/*
+Retrieves the 1D index of a cell at position x and y
+*/
+int getCell_i(float x, float y) {
+    return getCell_x(x) + getCell_y(y) * numCells_x;
+}
+
+
+
+/*
 Boid class to represent a single bird / particle / actor
 */
 class Boid {
@@ -96,34 +129,30 @@ class Boid {
         float py;
         float vx;
         float vy;
-
-        Boid() {
-            this->px = 0;
-            this->py = 0;
-            this->vx = 0;
-            this->vy = 0;
-        }
+        uint cellIndex;
     
         Boid(float px, float py, float vx, float vy) {
             this->px = px;
             this->py = py;
             this->vx = vx;
             this->vy = vy;
+            this->cellIndex = getCell_i(px, py);
         }
 };
 
 Boid* boidsArrayHost;
+Boid** cellsArrayHost;
+uint* cellOffsetsHost;
+uint* cellSizesHost;
 
 
 
-/*
-Cell class to represent a subdivision of the simulation space containing a list of pointers to boids
-*/
-struct Cell {
-    std::list<Boid*> boids;
-};
-
-
+void freeMemory() {
+    free(boidsArrayHost);
+    free(cellsArrayHost);
+    free(cellOffsetsHost);
+    free(cellSizesHost);
+}
 
 /*
 Saves 
@@ -207,7 +236,7 @@ __device__ void getOrthogonal(float &orthogonalVector_x, float &orthogonalVector
 
 
 //Using shared memory
-__global__ void updateBoidsKernel_GPU(int N, Boid* in, Boid* out)
+__global__ void updateBoidsKernel_GPU(int N, Boid* cellsArray, uint* cellOffsetsArray, uint* cellSizesArray, Boid* out)
 {
     //This boid's index
     int thisIndex = blockIdx.x * blockDim.x + threadIdx.x;
@@ -218,27 +247,45 @@ __global__ void updateBoidsKernel_GPU(int N, Boid* in, Boid* out)
         float formationPos_x = 0, formationPos_y = 0;
         int neighboringBoids = 0;
 
-        //For some reason Boid& o = in[otherIndex]; seems to make it faster but making this line a reference makes it slower
-        Boid b = in[thisIndex];
+        //For some reason Boid& o = cellsArray[otherIndex]; seems to make it faster but making this line a reference makes it slower
+        Boid b = cellsArray[thisIndex];
 
-        for (int otherIndex = 0; otherIndex < N; otherIndex++) {
-            if (otherIndex == thisIndex) continue; //Ignore itself
+        //TODO there must be a more efficient way of doing this
+        int thisCellIndex = b.cellIndex;
+        int cell_x = thisCellIndex % deviceNumCells_x;
+        int cell_y = thisCellIndex / deviceNumCells_x;
+        // Iterate over neighboring cells
+        for(int x = cell_x - 1; x <= cell_x + 1; x++) {
+            if (x < 0 || x >= deviceNumCells_x) continue; //Ignore cells beyond boundary
+            for(int y = cell_y - 1; y <= cell_y + 1; y++) {
+                if (y < 0 || y >= deviceNumCells_y) continue; //Ignore cells beyond boundary
 
-            Boid& o = in[otherIndex];
-        
-            // Get the distance between this boid and other boid
-            float sqrDist = sqrMag(b.px - o.px, b.py - o.py);
-            if (sqrDist < sqrAvoidRange) { // If the distance is less than protected range
-                //Divide by the square of distance to make avoidance exponential and smoother
-                avoidVector_x += (b.px - o.px) / sqrDist;
-                avoidVector_y += (b.py - o.py) / sqrDist;
-            }
-            if (sqrDist < sqrVisualRange) { // If the distance is less than visual range
-                formationDir_x += o.vx;
-                formationDir_y += o.vy;
-                formationPos_x += o.px;
-                formationPos_y += o.py;
-                neighboringBoids++;
+                uint otherCellIndex = x + y * deviceNumCells_x;
+
+                //Iterate over each boid in neighboring cell
+                for (int otherIndex = cellOffsetsArray[otherCellIndex]; otherIndex < cellOffsetsArray[otherCellIndex] + cellSizesArray[otherCellIndex]; otherIndex++) {
+
+                    Boid& o = cellsArray[otherIndex];
+
+                    if (&o == &cellsArray[thisIndex]) continue; //Ignore itself
+
+                    //printf("          This cell (%d, %d): Found boid (%.0f, %.0f). in cell: %d, %d\n", cell_x, cell_y, o.px, o.py, x, y);
+
+                    // Get the distance between this boid and other boid
+                    float sqrDist = sqrMag(b.px - o.px, b.py - o.py);
+                    if (sqrDist < sqrAvoidRange) { // If the distance is less than protected range
+                        //Divide by the square of distance to make avoidance exponential and smoother
+                        avoidVector_x += (b.px - o.px) / sqrDist;
+                        avoidVector_y += (b.py - o.py) / sqrDist;
+                    }
+                    if (sqrDist < sqrVisualRange) { // If the distance is less than visual range
+                        formationDir_x += o.vx;
+                        formationDir_y += o.vy;
+                        formationPos_x += o.px;
+                        formationPos_y += o.py;
+                        neighboringBoids++;
+                    }
+                }
             }
         }
 
@@ -318,32 +365,75 @@ __global__ void updateBoidsKernel_GPU(int N, Boid* in, Boid* out)
 
 
 
+void assignBoidsToCells(int numBoids)
+{
+    //Reset cells
+    for(int i = 0; i < numCells_x * numCells_y; i++) {
+        free(cellsArrayHost[i]);
+        cellsArrayHost[i] = (Boid*)malloc(0);
+        cellSizesHost[i] = 0;
+        cellOffsetsHost[i] = 0;
+    }
+    //Assign boids to cells
+    for(int i = 0; i < numBoids; i++) {
+        Boid& b = boidsArrayHost[i];
+        b.cellIndex = getCell_i(b.px, b.py); //TODO dont calculate this here
+        //Allocate boid to a cell in cellsArrayHost
+        cellsArrayHost[b.cellIndex] = (Boid*)realloc(cellsArrayHost[b.cellIndex], ++cellSizesHost[b.cellIndex] * sizeof(Boid));
+        cellsArrayHost[b.cellIndex][cellSizesHost[b.cellIndex] - 1] = b;
+    }
+}
+
+
+
 __host__ float updateBoids_GPU(int N)
 {
-    size_t size = N * sizeof(Boid);
+    size_t size1 = N * sizeof(Boid);
+    size_t size2 = numCells_x * numCells_y * sizeof(uint);
+    
+    //Recalculate which cells have which boids
+    assignBoidsToCells(N);
+
+    //flatten cells array so we can put it onto the kernel
+    Boid* flattenedCellsArray = (Boid*)malloc(size1);
+    int indexOffset = 0;
+    for (int i = 0; i < numCells_x * numCells_y; i++) {
+        cellOffsetsHost[i] = indexOffset;
+        for (int j = 0; j < cellSizesHost[i]; j++) {
+            flattenedCellsArray[indexOffset + j] = cellsArrayHost[i][j];
+        }
+        indexOffset += cellSizesHost[i];
+    }
 
     //Allocate memory on the device
-    Boid *deviceIn;
+    Boid* deviceCells;
+    uint *deviceCellOffsets;
+    uint *deviceCellSizes;
     Boid *deviceOut;
-    cudaMalloc(&deviceIn, size);
-    cudaMalloc(&deviceOut, size);
+    cudaMalloc(&deviceCells, size1);
+    cudaMalloc(&deviceCellOffsets, size2);
+    cudaMalloc(&deviceCellSizes, size2);
+    cudaMalloc(&deviceOut, size1);
 
     //Copy memory from host to device
-    cudaMemcpy(deviceIn, boidsArrayHost, size, cudaMemcpyHostToDevice);
+    cudaMemcpy(deviceCells, flattenedCellsArray, size1, cudaMemcpyHostToDevice);
+    cudaMemcpy(deviceCellOffsets, cellOffsetsHost, size2, cudaMemcpyHostToDevice);
+    cudaMemcpy(deviceCellSizes, cellSizesHost, size2, cudaMemcpyHostToDevice);
+    //printf("Device Variable Copying:\t%s\n", cudaGetErrorString(cudaGetLastError()));
 
     //Specify blocks and threads, using 1D threads and blocks since our data is 1D
     int threadsPerBlock = BLOCKSIZE;
     int numBlocks = (N + threadsPerBlock - 1) / threadsPerBlock; //Int division of N / threadsPerBlock
 
+    //Start Timer
     cudaEvent_t startGPU;
     cudaEvent_t stopGPU;
     cudaEventCreate(&startGPU);
     cudaEventCreate(&stopGPU);
-    //Start Timer
     cudaEventRecord(startGPU);
     
     //Run
-    updateBoidsKernel_GPU<<<numBlocks, threadsPerBlock>>>(N, deviceIn, deviceOut);
+    updateBoidsKernel_GPU<<<numBlocks, threadsPerBlock>>>(N, deviceCells, deviceCellOffsets, deviceCellSizes, deviceOut);
 
     //Mark end of kernel execution
     cudaEventRecord(stopGPU);
@@ -357,10 +447,12 @@ __host__ float updateBoids_GPU(int N)
     cudaDeviceSynchronize();
 
     //Copy memory from device to host
-    cudaMemcpy(boidsArrayHost, deviceOut, size, cudaMemcpyDeviceToHost);
+    cudaMemcpy(boidsArrayHost, deviceOut, size1, cudaMemcpyDeviceToHost);
 
     //Clean up
-    cudaFree(deviceIn);
+    cudaFree(deviceCells);
+    cudaFree(deviceCellOffsets);
+    cudaFree(deviceCellSizes);
     cudaFree(deviceOut);
 
     return kernelTime * 1000;
@@ -370,7 +462,13 @@ __host__ float updateBoids_GPU(int N)
 
 void init(int numBoids)
 {
+    //Malloc boids
     boidsArrayHost = (Boid*)malloc(numBoids * sizeof(Boid));
+
+    //Malloc cells
+    cellsArrayHost = (Boid**)malloc(numCells_x * numCells_y * sizeof(Boid*));
+    cellSizesHost = (uint*)malloc(numCells_x * numCells_y * sizeof(uint));
+    cellOffsetsHost = (uint*)malloc(numCells_x * numCells_y * sizeof(uint));
 
     // Initialise array of boids and assign them to cells
     for(int i = 0; i < numBoids; i++) {
@@ -385,11 +483,12 @@ void init(int numBoids)
 }
 
 
-/*
+
 int main()
 {
     int numBoids = 1000;
     int numFrames = 300;
+
 
 
     // Create a file and open it for writing
@@ -399,6 +498,7 @@ int main()
         printf("%s", "Error opening file");
         return 1;
     }
+
 
 
     //Variables for main
@@ -412,12 +512,13 @@ int main()
 
     // Update boids
     for (int frame = 1; frame < numFrames; frame++) {
+        //Change the state and position of boids on the GPU
         updateBoids_GPU(numBoids);
         
         save(fptr, numBoids, frame);
     }
 
-
+    freeMemory();
     
     // Close the file
     fclose(fptr);
@@ -426,4 +527,3 @@ int main()
 
     return 0;
 }
-*/
