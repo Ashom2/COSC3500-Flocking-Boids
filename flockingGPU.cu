@@ -84,6 +84,10 @@ void setVars(int _xSize, int _ySize, int _marginSize,
     cudaMemcpyToSymbol(formationAngle, &_formationAngle, sizeof(float), 0, cudaMemcpyHostToDevice);    
 
     cellSize = max(_avoidRange, _visualRange);
+    int maxCells = 1024;
+    if (xSize * ySize > maxCells * (cellSize * cellSize)) { //If the total amount of cells exceeds threshold
+        cellSize = sqrt((xSize * ySize) / maxCells); //clamp the size of the cell
+    }
     numCells_x = ceil(xSize / cellSize);
     numCells_y = ceil(ySize / cellSize);
     cudaMemcpyToSymbol(deviceNumCells_x, &numCells_x, sizeof(int), 0, cudaMemcpyHostToDevice);
@@ -377,7 +381,7 @@ void assignBoidsToCells(int numBoids)
         cellSizesHost[i] = 0;
         cellOffsetsHost[i] = 0;
     }
-
+    
     //Determine cell sizes
     for(int i = 0; i < numBoids; i++) {
         Boid& b = boidsArrayHost[i];
@@ -407,7 +411,7 @@ __host__ float updateBoids_GPU(int N)
     size_t size1 = N * sizeof(Boid);
     size_t size2 = numCells_x * numCells_y * sizeof(uint);
     
-    auto start = std::chrono::high_resolution_clock::now();
+
 
     //Recalculate which cells have which boids
     assignBoidsToCells(N);
@@ -426,9 +430,6 @@ __host__ float updateBoids_GPU(int N)
     }
 
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::micro> duration_us = end - start;
-    printf("N: %d. ------------- CPU Time taken: %g us.\n", N, duration_us.count());
 
     //Allocate memory on the device
     Boid* deviceCells;
@@ -508,7 +509,7 @@ void init(int numBoids)
 }
 
 
-
+/*
 int main()
 {
     int numBoids = 1000;
@@ -552,3 +553,4 @@ int main()
 
     return 0;
 }
+*/
