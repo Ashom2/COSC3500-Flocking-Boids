@@ -1,33 +1,25 @@
 #include <stdio.h>
 #include <chrono>
-
 #include "flockingCPU.h"
 #include "flockingGPU.cuh"
 
-//Must be compiled with flockingCPU.cpp
-//To run do:
-//g++ -o flockingProfiler flockingProfiler.cpp flockingCPU.cpp
-//Or
-//Use the makefile / slurm script
+
+
+//This fileMust be compiled with flockingCPU.cpp / flockingGPU.cu
+
+
 
 const char *profilingFilepath = "ProfilingData.csv";
 
+
+
 /*
-Saves 
+Saves a line of csv data
 */
 void saveLine(FILE *fptr, int number, double time1, float time2, float time3) {
     // Write row to file
     fprintf(fptr, "%d, %g, %g, %g\n", number, time1, time2, time3);
 }
-
-//TODO check that the parameters are the same - especially numCells (or automate)
-//TODO add error between comparisons
-//TODO don't overwrite file, just add new line
-
-//performance-affecting variables:
-//number of boids
-//Cell dimensions
-
 
 //TODO these should be retrieved, or set the same
 const int numCells_x = 16;
@@ -112,8 +104,8 @@ int main()
     
 
     //Logarithmic profiling
-    
-    /*int max = 1000000;
+    /*
+    int max = 100000000;
     for (int N = 1; N < max; N *= 10) {
         ProfileAt(N, fptr);
         ProfileAt(N * pow(10, 0.25), fptr);
@@ -124,7 +116,7 @@ int main()
     
 
     //Linear profiling
-    int max = 1000000;
+    int max = 1000000; //1 million
     int step = 5000;
     for (int N = step; N <= max; N += step) {
         ProfileAt(N, fptr);
