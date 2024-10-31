@@ -35,14 +35,11 @@ __device__ float maxSpeed = 2;
 __device__ float formationAngle = 0.7 * PI;
 
 // Calculate cell size
-float cellSize = 32;
-int numCells_x = 16;
-int numCells_y = 16;
-__device__ int deviceNumCells_x = 16;
-__device__ int deviceNumCells_y = 16;
-//const int cellSize = pow(2, ceil(log2(std::max(avoidRange, visualRange))));
-// I failed to implement this using constexpr so you (the user) must compute manually
-
+float cellSize = max(avoidRange, visualRange);
+int numCells_x = ceil(xSize / cellSize);
+int numCells_y = ceil(ySize / cellSize);
+__device__ int deviceNumCells_x = 26;
+__device__ int deviceNumCells_y = 26;
 
 
 
@@ -85,6 +82,12 @@ void setVars(int _xSize, int _ySize, int _marginSize,
     cudaMemcpyToSymbol(maxSpeed, &_maxSpeed, sizeof(float), 0, cudaMemcpyHostToDevice);
 
     cudaMemcpyToSymbol(formationAngle, &_formationAngle, sizeof(float), 0, cudaMemcpyHostToDevice);    
+
+    cellSize = max(_avoidRange, _visualRange);
+    numCells_x = ceil(xSize / cellSize);
+    numCells_y = ceil(ySize / cellSize);
+    cudaMemcpyToSymbol(deviceNumCells_x, &numCells_x, sizeof(int), 0, cudaMemcpyHostToDevice);
+    cudaMemcpyToSymbol(deviceNumCells_y, &numCells_y, sizeof(int), 0, cudaMemcpyHostToDevice);
 }
 
 
@@ -392,7 +395,7 @@ void assignBoidsToCells(int numBoids)
     //Put boids in cells
     for(int i = 0; i < numBoids; i++) {
         Boid& b = boidsArrayHost[i];
-        //Allocate boid to a cell in cellsArrayHost
+        //Allocate boid to a cell in cellsArrayHost and increment cellSizesHost
         cellsArrayHost[b.cellIndex][cellSizesHost[b.cellIndex]++] = b;
     }
 }
@@ -505,7 +508,7 @@ void init(int numBoids)
 }
 
 
-/*
+
 int main()
 {
     int numBoids = 1000;
@@ -549,4 +552,3 @@ int main()
 
     return 0;
 }
-*/
