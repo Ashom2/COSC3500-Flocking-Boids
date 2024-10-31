@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <list>
 #include <math.h>
+#include <vector_types.h>//allows the use of composite types, e.g. float2, float3, int3, etc.
 
 void setVars(int _xSize, int _ySize, int _marginSize, 
         float _turnFactor, 
