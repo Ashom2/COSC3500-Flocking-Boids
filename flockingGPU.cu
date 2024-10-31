@@ -277,8 +277,6 @@ __global__ void updateBoidsKernel_GPU(int N, Boid* cellsArray, uint* cellOffsets
 
                     if (&o == &cellsArray[thisIndex]) continue; //Ignore itself
 
-                    //printf("          This cell (%d, %d): Found boid (%.0f, %.0f). in cell: %d, %d\n", cell_x, cell_y, o.px, o.py, x, y);
-
                     // Get the distance between this boid and other boid
                     float sqrDist = sqrMag(b.px - o.px, b.py - o.py);
                     if (sqrDist < sqrAvoidRange) { // If the distance is less than protected range
@@ -445,7 +443,6 @@ __host__ float updateBoids_GPU(int N)
     cudaMemcpy(deviceCells, flattenedCellsArray, size1, cudaMemcpyHostToDevice);
     cudaMemcpy(deviceCellOffsets, cellOffsetsHost, size2, cudaMemcpyHostToDevice);
     cudaMemcpy(deviceCellSizes, cellSizesHost, size2, cudaMemcpyHostToDevice);
-    //printf("Device Variable Copying:\t%s\n", cudaGetErrorString(cudaGetLastError()));
 
     //Specify blocks and threads, using 1D threads and blocks since our data is 1D
     int threadsPerBlock = BLOCKSIZE;
@@ -509,11 +506,11 @@ void init(int numBoids)
 }
 
 
-/*
+
 int main()
 {
-    int numBoids = 1000;
-    int numFrames = 300;
+    int numBoids = 2000;
+    int numFrames = 500;
 
 
 
@@ -528,7 +525,7 @@ int main()
 
 
     //Variables for main
-    setVars(512, 512, 64, 0.2, 8, 0.15, 20, 0.05, 0.2, 1, 2, 0.7 * PI);
+    setVars(512, 512, 32, 0.2, 4, 0.15, 10, 0.05, 0.02, 1, 3, 0.7 * PI);
 
     init(numBoids);
 
@@ -553,4 +550,3 @@ int main()
 
     return 0;
 }
-*/
