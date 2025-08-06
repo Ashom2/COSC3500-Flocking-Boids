@@ -1,5 +1,5 @@
 # About
-A flocking model based on Craig Reynold's Boids program with behaviour for flocking and formations. Developed as part of COSC3500 course at the Univerity of Queensland. It is optimised to run in O(N) using spatial subdivision and parallelised for GPU.
+A flocking model based on Craig Reynolds' Boids program with behaviour for flocking and formations. Developed as part of COSC3500 course at the Univerity of Queensland. It is optimised to run in O(N) using spatial subdivision and parallelised for GPU.
 
 # Formations / Flocking
 <img src="https://github.com/user-attachments/assets/937c9a40-ab83-4cc2-8d8d-1c7084b7cda5" align="left" width="400px"/>
